@@ -11,6 +11,7 @@ public class Student {
 	
 	private Long id;
 	private String name;
+	private int password;
 	private String courseName;
 	private String photo;
 	private String schoolName;
@@ -35,6 +36,12 @@ public class Student {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public int getPassword() {
+		return password;
+	}
+	public void setPassword(int password) {
+		this.password = password;
 	}
 	public String getCourseName() {
 		return courseName;
