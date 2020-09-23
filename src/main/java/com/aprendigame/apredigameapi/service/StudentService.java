@@ -4,9 +4,9 @@ import com.aprendigame.apredigameapi.model.entity.Student;
 
 public interface StudentService {
 	
-	Student autenticar(String registration, String senha);
+	Student authenticate(String registration, String senha);
 	
-	Student salvarStudent(Student student);
+	Student saveStudent(Student student);
 	
-	void validarRegistration(String registration);
+	void validateRegistration(String registration);
 }
