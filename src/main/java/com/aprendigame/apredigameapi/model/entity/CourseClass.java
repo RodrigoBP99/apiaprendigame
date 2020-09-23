@@ -3,9 +3,13 @@ package com.aprendigame.apredigameapi.model.entity;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -15,9 +19,15 @@ public class CourseClass {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@ManyToMany
+	@JoinColumn(name = "student_id")
 	private List<Student> students;
+	@ManyToOne
 	private CoursesUnit courseUnit;
+	@Enumerated
 	private String status;
+	@ManyToOne
+	private Teacher teacher;
 	
 	public Long getId() {
 		return id;
@@ -43,6 +53,12 @@ public class CourseClass {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public Teacher getTeacher() {
+		return teacher;
+	}
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
+	}
 	
 	@Override
 	public int hashCode() {
@@ -51,6 +67,7 @@ public class CourseClass {
 		result = prime * result + ((courseUnit == null) ? 0 : courseUnit.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((teacher == null) ? 0 : teacher.hashCode());
 		return result;
 	}
 	
@@ -77,6 +94,11 @@ public class CourseClass {
 			if (other.status != null)
 				return false;
 		} else if (!status.equals(other.status))
+			return false;
+		if (teacher == null) {
+			if (other.teacher != null)
+				return false;
+		} else if (!teacher.equals(other.teacher))
 			return false;
 		return true;
 	}

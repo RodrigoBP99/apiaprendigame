@@ -2,10 +2,13 @@ package com.aprendigame.apredigameapi.model.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -16,7 +19,9 @@ public class CoursesUnit {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
+	@ManyToMany
 	private List<Teacher> teacher;
+	@OneToMany(mappedBy = "courseUnit", cascade = CascadeType.ALL)
 	private List<CourseClass> courseClasses;
 	
 	public Long getId() {
@@ -50,6 +55,7 @@ public class CoursesUnit {
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((teacher == null) ? 0 : teacher.hashCode());
 		return result;
 	}
 	
@@ -72,7 +78,11 @@ public class CoursesUnit {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (teacher == null) {
+			if (other.teacher != null)
+				return false;
+		} else if (!teacher.equals(other.teacher))
+			return false;
 		return true;
 	}
-
 }

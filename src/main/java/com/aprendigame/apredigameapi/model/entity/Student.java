@@ -2,10 +2,14 @@ package com.aprendigame.apredigameapi.model.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,7 +28,10 @@ public class Student {
 	private String birthday;
 	private String details;
 	private String course;
+	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
 	private List<Presenc> presences;
+	@ManyToMany
+	@JoinColumn(name = "student_id")
 	private List<CourseClass> listClass;
 	private double points;
 	private double requiredPoints;
