@@ -16,7 +16,8 @@ public class Student {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	private int password;
+	private String registration;
+	private String password;
 	private String courseName;
 	private String photo;
 	private String schoolName;
@@ -29,7 +30,6 @@ public class Student {
 	private double requiredPoints;
 	private int actualLevel;
 	private int nextLevel;
-	
 	public Long getId() {
 		return id;
 	}
@@ -42,10 +42,16 @@ public class Student {
 	public void setName(String name) {
 		this.name = name;
 	}
-//	public int getPassword() {
-//		return password;
-//	}
-	public void setPassword(int password) {
+	public String getRegistration() {
+		return registration;
+	}
+	public void setRegistration(String registration) {
+		this.registration = registration;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
 		this.password = password;
 	}
 	public String getCourseName() {
@@ -130,10 +136,11 @@ public class Student {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + nextLevel;
-		result = prime * result + password;
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(points);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((registration == null) ? 0 : registration.hashCode());
 		temp = Double.doubleToLongBits(requiredPoints);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
@@ -167,9 +174,17 @@ public class Student {
 			return false;
 		if (nextLevel != other.nextLevel)
 			return false;
-		if (password != other.password)
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
 			return false;
 		if (Double.doubleToLongBits(points) != Double.doubleToLongBits(other.points))
+			return false;
+		if (registration == null) {
+			if (other.registration != null)
+				return false;
+		} else if (!registration.equals(other.registration))
 			return false;
 		if (Double.doubleToLongBits(requiredPoints) != Double.doubleToLongBits(other.requiredPoints))
 			return false;
@@ -178,10 +193,10 @@ public class Student {
 	
 	@Override
 	public String toString() {
-		return "Student [id=" + id + ", name=" + name + ", password=" + password + ", courseName=" + courseName
-				+ ", photo=" + photo + ", schoolName=" + schoolName + ", birthday=" + birthday + ", details=" + details
-				+ ", course=" + course + ", presences=" + presences + ", listClass=" + listClass + ", points=" + points
-				+ ", requiredPoints=" + requiredPoints + ", actualLevel=" + actualLevel + ", nextLevel=" + nextLevel
-				+ "]";
-	}	
+		return "Student [id=" + id + ", name=" + name + ", registration=" + registration + ", password=" + password
+				+ ", courseName=" + courseName + ", photo=" + photo + ", schoolName=" + schoolName + ", birthday="
+				+ birthday + ", details=" + details + ", course=" + course + ", presences=" + presences + ", listClass="
+				+ listClass + ", points=" + points + ", requiredPoints=" + requiredPoints + ", actualLevel="
+				+ actualLevel + ", nextLevel=" + nextLevel + "]";
+	}
 }

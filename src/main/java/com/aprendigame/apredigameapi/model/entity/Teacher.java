@@ -16,6 +16,8 @@ public class Teacher {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
+	private String registration;
+	private String password;
 	private List<CoursesUnit> courses;
 	
 	public Long getId() {
@@ -30,6 +32,18 @@ public class Teacher {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getRegistration() {
+		return registration;
+	}
+	public void setRegistration(String registration) {
+		this.registration = registration;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	public List<CoursesUnit> getCourses() {
 		return courses;
 	}
@@ -43,6 +57,8 @@ public class Teacher {
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((registration == null) ? 0 : registration.hashCode());
 		return result;
 	}
 	
@@ -65,11 +81,23 @@ public class Teacher {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (registration == null) {
+			if (other.registration != null)
+				return false;
+		} else if (!registration.equals(other.registration))
+			return false;
 		return true;
 	}
 	
 	@Override
 	public String toString() {
-		return "Teacher [id=" + id + ", name=" + name + ", courses=" + courses + "]";
+		return "Teacher [id=" + id + ", name=" + name + ", registration=" + registration + ", password=" + password
+				+ ", courses=" + courses + "]";
 	}
+	
 }
