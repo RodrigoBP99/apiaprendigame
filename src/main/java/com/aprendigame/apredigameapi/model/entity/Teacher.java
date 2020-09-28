@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.model.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,14 +12,19 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="teacher", schema="aprendigame")
-@Builder
+@Table(name="teacher", schema="aprendigameapi")
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class Teacher {
+public class Teacher implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

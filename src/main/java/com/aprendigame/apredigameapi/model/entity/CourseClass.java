@@ -12,12 +12,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="courseClass", schema="aprendigame")
-@Builder
+@Table(name="courseClass", schema="aprendigameapi")
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class CourseClass {
 	
@@ -29,7 +32,7 @@ public class CourseClass {
 	private List<Student> students;
 	@ManyToOne
 	private CoursesUnit courseUnit;
-	@Enumerated
+	//@Enumerated
 	private String status;
 	@ManyToOne
 	private Teacher teacher;
