@@ -1,6 +1,5 @@
 package com.aprendigame.apredigameapi.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
