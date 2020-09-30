@@ -1,34 +1,39 @@
 package com.aprendigame.apredigameapi.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.aprendigame.apredigameapi.exception.BusinessRuleException;
-import com.aprendigame.apredigameapi.model.entity.Student;
-import com.aprendigame.apredigameapi.model.repository.StudentRepository;
 
+import com.aprendigame.apredigameapi.model.repository.StudentRepository;
+import com.aprendigame.apredigameapi.service.impl.StudentServiceImpl;
+
+@SpringBootTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@SpringBootTest
 public class StudentServiceTest {
 
-	@Autowired
+	@MockBean
 	StudentService service;
 	
-	@Autowired
+	@MockBean
 	StudentRepository repository;
+	
+	@Before
+	public void setUp() {
+		repository = Mockito.mock(StudentRepository.class);
+		service = new StudentServiceImpl(repository);
+	}
 	
 	@Test
 	public void shouldValidateRegistration() {
-		
 		//cenario
-		repository.deleteAll();
+		Mockito.when(repository.existsByRegistration(Mockito.anyString())).thenReturn(false);
 		
 		//ação
 		service.validateRegistration("123456");
@@ -36,14 +41,10 @@ public class StudentServiceTest {
 
 	@Test
 	public void shouldGiveErrorWhenValidateRegistrationIfThereIsRegiteredRegistrarion() {
-		
 		//cenario
-		Student student = new Student();
-		student.setName("student");
-		student.setRegistration("123456");
-		repository.save(student);
+		Mockito.when(repository.existsByRegistration(Mockito.anyString())).thenReturn(true);
 		
 		//ação
-		assertThrows(BusinessRuleException.class, () -> service.validateRegistration("123456"), "Já existe um estudante cadastrado com esse matricula");
+		service.validateRegistration("123456");
 	}
 }
