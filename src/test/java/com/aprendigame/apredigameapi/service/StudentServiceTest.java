@@ -16,7 +16,7 @@ import com.aprendigame.apredigameapi.model.repository.StudentRepository;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest
-public class UsuarioServiceTest {
+public class StudentServiceTest {
 
 	@Autowired
 	StudentService service;
