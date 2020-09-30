@@ -14,8 +14,8 @@ import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.model.repository.StudentRepository;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
 @ActiveProfiles("test")
+@SpringBootTest
 public class UsuarioServiceTest {
 
 	@Autowired
@@ -26,6 +26,7 @@ public class UsuarioServiceTest {
 	
 	@Test
 	public void shouldValidateRegistration() {
+		
 		//cenario
 		repository.deleteAll();
 		
@@ -44,6 +45,5 @@ public class UsuarioServiceTest {
 		
 		//ação
 		assertThrows(BusinessRuleException.class, () -> service.validateRegistration("123456"), "Já existe um estudante cadastrado com esse matricula");
-		
 	}
 }
