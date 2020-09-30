@@ -26,7 +26,7 @@ public class StudentServiceImpl implements StudentService{
 		Optional<Student> student = repository.findByRegistration(registration);
 		
 		if(!student.isPresent()) {
-			throw new AutenticationError("Matricula não encontrada");
+			throw new AutenticationError("Não foi encontrado Estudante com essa Matricula");
 		}
 		
 		if(!student.get().getPassword().equals(password)) {

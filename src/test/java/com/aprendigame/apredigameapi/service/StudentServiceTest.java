@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.model.repository.StudentRepository;
@@ -53,6 +54,35 @@ public class StudentServiceTest {
 		Assertions.assertThat(result).isNotNull();
 	}
 	
+	@Test
+	public void shouldReturnErrorWhenNotFindRegistredStudentForResgistrationSearched() {
+		//cenario
+		Mockito.when(repository.findByRegistration(Mockito.anyString())).thenReturn(Optional.empty());
+		
+		//ação
+		Throwable exception = Assertions.catchThrowable(() -> service.authenticate("123456", "147258"));
+		
+		//verificação
+		Assertions.assertThat(exception).isInstanceOf(AutenticationError.class).hasMessage("Não foi encontrado Estudante com essa Matricula");
+		
+	}
+	
+	@Test
+	public void shouldReturnErrorWhenPasswordIsntCorrect() {
+		//cenario
+		String password = "147258";
+		Student student = new Student();
+		student.setRegistration("123456");
+		student.setPassword(password);
+		Mockito.when(repository.findByRegistration(Mockito.anyString())).thenReturn(Optional.of(student));
+		
+		//ação
+		Throwable exception = Assertions.catchThrowable(() -> service.authenticate("123456", "password"));
+		
+		//verificação
+		Assertions.assertThat(exception).isInstanceOf(AutenticationError.class).hasMessage("Senha inválida!");
+	}
+	
 	@Test(expected = Test.None.class)
 	public void shouldValidateRegistration() {
 		//cenario
@@ -63,7 +93,7 @@ public class StudentServiceTest {
 	}
 
 	@Test(expected = BusinessRuleException.class)
-	public void shouldGiveErrorWhenValidateRegistrationIfThereIsRegiteredRegistrarion() {
+	public void shouldGiveErrorWhenValidateRegistrationIfThereIsRegiteredStudentWhitThatRegistrarion() {
 		//cenario
 		Mockito.when(repository.existsByRegistration(Mockito.anyString())).thenReturn(true);
 		
