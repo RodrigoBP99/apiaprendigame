@@ -1,7 +1,10 @@
 package com.aprendigame.apredigameapi.service;
 
+import java.util.Optional;
+
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
+import com.aprendigame.apredigameapi.exception.BusinessRuleException;
+import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.model.repository.StudentRepository;
 import com.aprendigame.apredigameapi.service.impl.StudentServiceImpl;
 
@@ -30,7 +34,26 @@ public class StudentServiceTest {
 		service = new StudentServiceImpl(repository);
 	}
 	
-	@Test
+	@Test(expected = Test.None.class)
+	public void shouldAuthenticateStudentWithSucess() {
+		//cenario
+		String registration = "123456";
+		String password = "147258";
+		Student student = new Student();
+		student.setRegistration(registration);
+		student.setPassword(password);
+		student.setId(1L);
+		
+		Mockito.when(repository.findByRegistration(registration)).thenReturn(Optional.of(student));
+		
+		//ação
+		Student result = service.authenticate(registration, password);
+		
+		//verificação
+		Assertions.assertThat(result).isNotNull();
+	}
+	
+	@Test(expected = Test.None.class)
 	public void shouldValidateRegistration() {
 		//cenario
 		Mockito.when(repository.existsByRegistration(Mockito.anyString())).thenReturn(false);
@@ -39,7 +62,7 @@ public class StudentServiceTest {
 		service.validateRegistration("123456");
 	}
 
-	@Test
+	@Test(expected = BusinessRuleException.class)
 	public void shouldGiveErrorWhenValidateRegistrationIfThereIsRegiteredRegistrarion() {
 		//cenario
 		Mockito.when(repository.existsByRegistration(Mockito.anyString())).thenReturn(true);
@@ -47,4 +70,5 @@ public class StudentServiceTest {
 		//ação
 		service.validateRegistration("123456");
 	}
+	
 }
