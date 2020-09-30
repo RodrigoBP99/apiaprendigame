@@ -1,7 +1,11 @@
 package com.aprendigame.apredigameapi.service.impl;
 
-import org.springframework.stereotype.Service;
+import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.model.repository.StudentRepository;
@@ -18,15 +22,25 @@ public class StudentServiceImpl implements StudentService{
 	}
 
 	@Override
-	public Student authenticate(String registration, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+	public Student authenticate(String registration, String password) {
+		Optional<Student> student = repository.findByRegistration(registration);
+		
+		if(!student.isPresent()) {
+			throw new AutenticationError("Matricula não encontrada");
+		}
+		
+		if(!student.get().getPassword().equals(password)) {
+			throw new AutenticationError("Senha inválida!");
+		}
+		
+		return student.get();
 	}
 
 	@Override
+	@Transactional
 	public Student saveStudent(Student student) {
-		// TODO Auto-generated method stub
-		return null;
+		validateRegistration(student.getRegistration());
+		return repository.save(student);
 	}
 
 	@Override
