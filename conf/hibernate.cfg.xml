@@ -3,14 +3,14 @@
                                          "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
  <session-factory name="">
-  <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+  <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
   <property name="hibernate.show_sql">true</property>
   <property name="hibernate.format_sql">false</property>
   <property name="hbm2ddl.auto">update</property>
-  <property name="hibernate.connection.driver_class">org.postgresql.util.DriverInfo</property>
-  <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/aprendigame</property>
-  <property name="hibernate.connection.username">postgres</property>
-  <property name="hibernate.connection.password">bo7po115</property>
+  <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+  <property name="hibernate.connection.url">jdbc:h2:mem:db</property>
+  <property name="hibernate.connection.username">sa</property>
+  <property name="hibernate.connection.password">sa</property>
   <!-- Classes -->
   <mapping class="com.aprendigame.apredigameapi.model.entity.CourseClass"/>
   <mapping class="com.aprendigame.apredigameapi.model.entity.CourseUnit"/>
