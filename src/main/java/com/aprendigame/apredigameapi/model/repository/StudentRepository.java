@@ -1,6 +1,5 @@
 package com.aprendigame.apredigameapi.model.repository;
 
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
