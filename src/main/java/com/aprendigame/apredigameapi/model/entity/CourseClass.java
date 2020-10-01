@@ -25,6 +25,8 @@ public class CourseClass {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private String name;
+	private String code;
 	@ManyToMany
 	@JoinColumn(name = "student_id")
 	private List<Student> students;

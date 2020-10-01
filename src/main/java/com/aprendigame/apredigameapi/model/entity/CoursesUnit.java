@@ -29,6 +29,7 @@ public class CoursesUnit implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
+	private String code;
 	@ManyToMany
 	private List<Teacher> teacher;
 	@OneToMany(mappedBy = "courseUnit", cascade = CascadeType.ALL)
