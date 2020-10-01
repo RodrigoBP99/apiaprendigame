@@ -3,6 +3,7 @@ package com.aprendigame.apredigameapi.service.impl;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
@@ -25,7 +26,7 @@ public class TeacherServiceImpl implements TeacherService {
 		Optional<Teacher> teacher = repository.findByRegistration(registration);
 		
 		if(!teacher.isPresent()) {
-			throw new AutenticationError("Matricula não encontrada");
+			throw new AutenticationError("Não foi encontrado Professores com essa Matricula");
 		}
 		
 		if(!teacher.get().getPassword().equals(password)) {
@@ -36,6 +37,7 @@ public class TeacherServiceImpl implements TeacherService {
 	}
 
 	@Override
+	@Transactional
 	public Teacher saveTeacher(Teacher teacher) {
 		validateRegistration(teacher.getRegistration());
 		return repository.save(teacher);

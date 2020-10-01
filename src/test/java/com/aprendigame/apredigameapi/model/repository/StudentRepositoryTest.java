@@ -28,7 +28,7 @@ public class StudentRepositoryTest {
 	TestEntityManager entityManager;
 	
 	@Test
-	public void shouldVerifyTheExistenceOfARegistration() {
+	public void shouldVerifyTheExistenceOfAStudentRegistration() {
 		//cenário
 		Student student = createStudent();
 		entityManager.persist(student);
@@ -41,9 +41,7 @@ public class StudentRepositoryTest {
 	}
 	
 	@Test
-	public void shouldReturnFalseWhenDontExistARegistredStudent() {
-		//cenário
-		
+	public void shouldReturnFalseWhenDontExistARegisteredStudent() {
 		//ação
 		boolean result = repository.existsByRegistration("123456");
 		
@@ -52,7 +50,7 @@ public class StudentRepositoryTest {
 	}
 	
 	@Test
-	public void shouldPersistAStudentInTheDataBase() {
+	public void shouldPersistAStudentInDataBase() {
 		//cenario
 		Student student = createStudent();
 		
@@ -64,7 +62,7 @@ public class StudentRepositoryTest {
 	}
 	
 	@Test
-	public void shouldFindAStudentByRegistrarion() {
+	public void shouldFindAStudentByRegistration() {
 		//cenario
 		Student student = createStudent();
 		entityManager.persist(student);
@@ -78,8 +76,6 @@ public class StudentRepositoryTest {
 	
 	@Test
 	public void shouldReturnEmpityWhenSearchForAStudentThatDontExistOnDataBase() {
-		//cenario
-		
 		//ação
 		Optional<Student> result = repository.findByRegistration("123456");
 		
@@ -99,6 +95,7 @@ public class StudentRepositoryTest {
 		student.setNextLevel(2);
 		student.setPoints(0);
 		student.setRequiredPoints(100);
+		
 		return student;
 	}
 
