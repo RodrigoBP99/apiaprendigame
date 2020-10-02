@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -18,25 +16,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="courseClass", schema="aprendigameapi")
+@Table(name="quizz", schema="aprendigameapi")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CourseClass {
+public class Quizz {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String name;
-	private String code;
-	@ManyToMany
-	@JoinColumn(name = "student_id")
-	private List<Student> students;
+	private String title;
 	@ManyToOne
-	private CoursesUnit courseUnit;
-	@ManyToOne
-	private Teacher teacher;
-	@OneToMany(mappedBy = "courseClass", cascade = CascadeType.ALL)
-	private List<Quizz> quizzes;
+	private CourseClass courseClass;
+	private String amountOfQuestions;
+	@OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL)
+	private List<Question> questions;
+	
 
 }
