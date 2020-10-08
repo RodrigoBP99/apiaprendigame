@@ -38,7 +38,6 @@ public class Student implements Serializable{
 	private String schoolName;
 	private String birthday;
 	private String details;
-	private String course;
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
 	private List<Presenc> presences;
 	@ManyToMany
