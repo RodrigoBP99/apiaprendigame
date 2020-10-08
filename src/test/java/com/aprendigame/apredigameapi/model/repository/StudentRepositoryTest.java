@@ -89,7 +89,6 @@ public class StudentRepositoryTest {
 		student.setRegistration("123456");
 		student.setPassword("147258");
 		student.setBirthday("07/04/1999");
-		student.setCourse("course");
 		student.setSchoolName("school");
 		student.setActualLevel(1);
 		student.setNextLevel(2);

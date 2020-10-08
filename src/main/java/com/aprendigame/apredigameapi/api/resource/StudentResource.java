@@ -9,18 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.StudentDTO;
+import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.service.StudentService;
 
 @RestController
-@RequestMapping("/api/students")
+@RequestMapping("/api/student")
 public class StudentResource {
 	
 	private StudentService service;
 	
 	public StudentResource(StudentService service) {
 		this.service = service;
+	}
+	
+	@PostMapping("/login")
+	public ResponseEntity authenticate( @RequestBody StudentDTO dto) {
+		try {
+			Student authenticatedStudent = service.authenticate(dto.getRegistration(), dto.getPassword());
+			return ResponseEntity.ok(authenticatedStudent);
+		} catch (AutenticationError e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+		
 	}
 	
 	@PostMapping
@@ -33,6 +45,10 @@ public class StudentResource {
 		student.setCourseName(dto.getSchoolName());
 		student.setBirthday(dto.getBirthday());
 		student.setPassword(dto.getPassword());
+		student.setActualLevel(1);
+		student.setNextLevel(2);
+		student.setPoints(0);
+		student.setRequiredPoints(student.getActualLevel()*25);
 		
 		try {
 			Student savedStudent = service.saveStudent(student);
