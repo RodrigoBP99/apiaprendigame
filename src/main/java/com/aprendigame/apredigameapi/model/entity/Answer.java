@@ -6,6 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +26,8 @@ public class Answer {
 	private String text;
 	@Enumerated(value = EnumType.STRING)
 	private AnswerType answerType;
-	
+	@ManyToOne
+	private Question question;
 	
 
 }

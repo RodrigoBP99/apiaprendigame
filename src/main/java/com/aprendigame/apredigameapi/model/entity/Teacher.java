@@ -3,7 +3,6 @@ package com.aprendigame.apredigameapi.model.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,7 +32,7 @@ public class Teacher implements Serializable {
 	private String password;
 	@ManyToMany
 	private List<CoursesUnit> courses;
-	@OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+	@OneToMany
 	private List<CourseClass> courseclasses;
 
 }
