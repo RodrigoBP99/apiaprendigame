@@ -15,5 +15,6 @@ public class StudentDTO {
 	private String courseName;
 	private String birthday;
 	private String password;
+	private String photo;
 
 }

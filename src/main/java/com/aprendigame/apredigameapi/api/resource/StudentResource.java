@@ -35,12 +35,13 @@ public class StudentResource {
 		
 	}
 	
-	@PostMapping
+	@PostMapping("/register")
 	public ResponseEntity save( @RequestBody StudentDTO dto) {
 		 
 		Student student = new Student();
 		student.setName(dto.getName());
 		student.setRegistration(dto.getRegistration());
+		student.setPhoto(dto.getPhoto());
 		student.setSchoolName(dto.getSchoolName());
 		student.setCourseName(dto.getSchoolName());
 		student.setBirthday(dto.getBirthday());
