@@ -20,7 +20,8 @@ public class Presenc {
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private String id;
-	private String classCode;
+	private String code;
+	private String courseClassCode;
 	private String date;
 	private String hour;
 	@ManyToOne

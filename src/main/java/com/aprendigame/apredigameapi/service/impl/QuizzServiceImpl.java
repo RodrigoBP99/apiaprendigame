@@ -18,6 +18,7 @@ public class QuizzServiceImpl implements QuizzService{
 	}
 
 	@Override
+	@Transactional
 	public Quizz saveQuizz(Quizz quizz) {
 		validateCodeAndCourseClass(quizz.getCode(), quizz.getCourseClass());
 		return repository.save(quizz);
