@@ -28,6 +28,7 @@ public class Quizz implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private String code;
 	private String title;
 	@ManyToOne
 	private CourseClass courseClass;
