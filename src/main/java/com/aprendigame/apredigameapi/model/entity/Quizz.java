@@ -35,6 +35,6 @@ public class Quizz implements Serializable{
 	private String amountOfQuestions;
 	@OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL)
 	private List<Question> questions;
-	
+	private Double points;
 
 }
