@@ -1,5 +1,7 @@
 package com.aprendigame.apredigameapi.model.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +18,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Presenc {
+public class Presenc implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private String id;

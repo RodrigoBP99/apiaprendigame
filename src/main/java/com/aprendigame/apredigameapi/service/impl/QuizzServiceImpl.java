@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
@@ -8,6 +9,7 @@ import com.aprendigame.apredigameapi.model.entity.Quizz;
 import com.aprendigame.apredigameapi.model.repository.QuizzRepository;
 import com.aprendigame.apredigameapi.service.QuizzService;
 
+@Service
 public class QuizzServiceImpl implements QuizzService{
 	
 	private QuizzRepository repository;
