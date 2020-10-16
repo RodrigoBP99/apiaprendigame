@@ -51,6 +51,5 @@ public class StudentServiceImpl implements StudentService{
 			throw new BusinessRuleException("Já existe um estudante cadastrado com esse matricula");
 		}
 	}
-	
 
 }
