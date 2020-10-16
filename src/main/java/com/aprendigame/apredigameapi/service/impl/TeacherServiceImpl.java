@@ -26,7 +26,7 @@ public class TeacherServiceImpl implements TeacherService {
 		Optional<Teacher> teacher = repository.findByRegistration(registration);
 		
 		if(!teacher.isPresent()) {
-			throw new AutenticationError("Não foi encontrado Professores com essa Matricula");
+			throw new AutenticationError("Não foi encontrado nenhum Professor com essa Matricula");
 		}
 		
 		if(!teacher.get().getPassword().equals(password)) {

@@ -1,8 +1,9 @@
 package com.aprendigame.apredigameapi.api.resource;
 
+import java.io.Serializable;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class StudentResource {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity authenticate( @RequestBody StudentDTO dto) {
+	public ResponseEntity<Serializable> authenticate( @RequestBody StudentDTO dto) {
 		try {
 			Student authenticatedStudent = service.authenticate(dto.getRegistration(), dto.getPassword());
 			return ResponseEntity.ok(authenticatedStudent);
@@ -36,7 +37,7 @@ public class StudentResource {
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity save( @RequestBody StudentDTO dto) {
+	public ResponseEntity<Serializable> save( @RequestBody StudentDTO dto) {
 		 
 		Student student = new Student();
 		student.setName(dto.getName());
@@ -54,7 +55,7 @@ public class StudentResource {
 		try {
 			Student savedStudent = service.saveStudent(student);
 			
-			return new ResponseEntity(savedStudent, HttpStatus.CREATED);
+			return new ResponseEntity<Serializable>(savedStudent, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
