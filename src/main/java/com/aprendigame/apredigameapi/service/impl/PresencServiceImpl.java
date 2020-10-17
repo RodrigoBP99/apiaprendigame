@@ -27,11 +27,9 @@ public class PresencServiceImpl implements PresencService {
 		Optional<Presenc> presenc = repository.findByCodeAndStudent(code, student);
 		
 		if(!presenc.isPresent()) {
-			throw new AutenticationError("Não foi possivel encontrar nenhuma Presença com esses dados");
+			throw new AutenticationError("Não foi possivel encontrar nenhuma Presença com esse Código");
 		}
-		if(!presenc.get().getCode().equals(code)) {
-			throw new AutenticationError("Não foi possivel encontrar nenhuma Presença com esse codigo");
-		}
+		
 		if(!presenc.get().getStudent().getRegistration().equals(student.getRegistration())) {
 			throw new AutenticationError("Não foi possivel encontrar nenhuma Presença para esse estudante");
 		}
