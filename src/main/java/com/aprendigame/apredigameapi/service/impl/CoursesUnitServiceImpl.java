@@ -2,17 +2,21 @@ package com.aprendigame.apredigameapi.service.impl;
 
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.model.repository.CoursesUnitRepository;
 import com.aprendigame.apredigameapi.service.CoursesUnitService;
 
+@Service
 public class CoursesUnitServiceImpl implements CoursesUnitService{
 	
 	private CoursesUnitRepository repository;
 	
 	public CoursesUnitServiceImpl(CoursesUnitRepository repository) {
+		super();
 		this.repository = repository;
 	}
 
