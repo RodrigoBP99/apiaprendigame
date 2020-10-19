@@ -16,5 +16,5 @@ public class QuestionDTO {
 
 	private String questionTittle;
 	private List<Answer> answers;
-	private Quizz quizz;
+	private Long quizzId;
 }

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aprendigame.apredigameapi.api.dto.QuestionDTO;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.Question;
+import com.aprendigame.apredigameapi.model.entity.Quizz;
 import com.aprendigame.apredigameapi.service.QuestionService;
+import com.aprendigame.apredigameapi.service.QuizzService;
 
 @RestController
 @RequestMapping("/api/question")
@@ -20,8 +22,11 @@ public class QuestionResource {
 
 	private QuestionService service;
 	
-	public QuestionResource(QuestionService service) {
+	private QuizzService serviceQuizz;
+	
+	public QuestionResource(QuestionService service, QuizzService serviceQuizz) {
 		this.service = service;
+		this.serviceQuizz = serviceQuizz;
 	}
 	
 	@PostMapping("/save")
@@ -29,7 +34,11 @@ public class QuestionResource {
 		Question question = new Question();
 		question.setQuestionTittle(dto.getQuestionTittle());
 		question.setAnswers(dto.getAnswers());
-		question.setQuizz(dto.getQuizz());
+		
+		Quizz quizz = serviceQuizz.findById(dto.getQuizzId())
+				.orElseThrow(() -> new BusinessRuleException("Não foi possivel cadastrar a pergunta, o Quizz informado não existe"));
+		
+		question.setQuizz(quizz);
 		
 		try {
 			Question savedQuestion = service.saveQuestion(question);

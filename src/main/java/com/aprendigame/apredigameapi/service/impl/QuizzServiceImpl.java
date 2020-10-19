@@ -51,5 +51,10 @@ public class QuizzServiceImpl implements QuizzService{
 		}
 		return quizz.get();
 	}
+
+	@Override
+	public Optional<Quizz> findById(Long id) {
+		return repository.findById(id);
+	}
 		
 }
