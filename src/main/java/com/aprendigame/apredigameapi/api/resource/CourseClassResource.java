@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.CourseClassDTO;
-import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.CourseClass;
+import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.service.CourseClassService;
+import com.aprendigame.apredigameapi.service.CoursesUnitService;
 
 @RestController
 @RequestMapping("api/courseClass")
@@ -22,36 +23,38 @@ public class CourseClassResource {
 
 	private CourseClassService service;
 	
-	public CourseClassResource(CourseClassService service) {
-		this.service = service;
-	}
+	private CoursesUnitService courseUnitService;
 	
-	@PostMapping("/find")
-	public ResponseEntity<Serializable> findCourseClass(@RequestBody CourseClassDTO dto) {
-		try {
-			CourseClass authenticatedCourseClass = service.findCourseClass(dto.getCode(), dto.getCourseUnit());
-			return ResponseEntity.ok(authenticatedCourseClass);
-		} catch (AutenticationError e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public CourseClassResource(CourseClassService service, CoursesUnitService courseUnitService) {
+		this.service = service;
+		this.courseUnitService = courseUnitService;
 	}
 	
 	@PostMapping("/save")
-	public ResponseEntity<Serializable> save(@RequestBody CourseClassDTO dto) {
-		CourseClass courseClass = new CourseClass();
-		courseClass.setName(dto.getName());
-		courseClass.setCode(dto.getCode());
-		courseClass.setStudents(dto.getStudents());
-		courseClass.setCourseUnit(dto.getCourseUnit());
-		courseClass.setTeacher(dto.getTeacher());
-		
-		
+	public ResponseEntity<Serializable> save(@RequestBody CourseClassDTO dto) {	
 		try {
-			CourseClass savedCourseClass = service.saveCourseClass(courseClass);
-			
+			CourseClass savedCourseClass = convert(dto);
+			savedCourseClass = service.saveCourseClass(savedCourseClass);
 			return new ResponseEntity<Serializable>(savedCourseClass, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
+	}
+	
+	private CourseClass convert(CourseClassDTO dto) {
+		CourseClass courseClass = new CourseClass();
+		courseClass.setName(dto.getName());
+		courseClass.setCode(dto.getCode());
+		courseClass.setStudents(dto.getStudents());
+		
+		courseClass.setTeacher(dto.getTeacher());
+		
+		
+		CoursesUnit courseUnit = courseUnitService.findByCode(dto.getCourseUnitCode())
+				.orElseThrow(() -> new BusinessRuleException("Não foi encontrado nenhum curso com esse código"));
+		
+		courseClass.setCourseUnit(courseUnit);
+		
+		return courseClass;
 	}
 }
