@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aprendigame.apredigameapi.api.dto.QuizzDTO;
 import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
+import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.Quizz;
+import com.aprendigame.apredigameapi.service.CourseClassService;
 import com.aprendigame.apredigameapi.service.QuizzService;
 
 @RestController
@@ -21,19 +23,11 @@ public class QuizzResource {
 
 	private QuizzService service;
 	
-	public QuizzResource(QuizzService service) {
-		this.service = service;
-	}
+	private CourseClassService courseClassService;
 	
-	@PostMapping("/find")
-	public ResponseEntity<Serializable> find(@RequestBody QuizzDTO dto){
-		try {
-			Quizz authenticatedQuizz = service.findQuizz(dto.getCode(), dto.getCourseClass());
-			
-			return ResponseEntity.ok(authenticatedQuizz);
-		} catch (AutenticationError e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public QuizzResource(QuizzService service, CourseClassService courseClassService) {
+		this.service = service;
+		this.courseClassService = courseClassService;
 	}
 	
 	@PostMapping("/save")
@@ -41,7 +35,11 @@ public class QuizzResource {
 		Quizz quizz = new Quizz();
 		quizz.setCode(dto.getCode());
 		quizz.setTitle(dto.getTitle());
-		quizz.setCourseClass(dto.getCourseClass());
+		
+		CourseClass courseClass = courseClassService.findById(dto.getCourseClassId())
+				.orElseThrow(() -> new BusinessRuleException("Não foi possivel concluir a ação, matéria não encontrada no sistema"));
+		
+		quizz.setCourseClass(courseClass);
 		
 		try {
 			Quizz savedQuizz = service.saveQuizz(quizz);

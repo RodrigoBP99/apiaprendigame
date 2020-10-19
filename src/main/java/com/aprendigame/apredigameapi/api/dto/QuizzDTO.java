@@ -16,7 +16,7 @@ public class QuizzDTO {
 	
 	private String code;
 	private String title;
-	private CourseClass courseClass;
+	private Long courseClassId;
 	private String amountOfQuestions;
 	private List<Question> questions;
 	private Double points;
