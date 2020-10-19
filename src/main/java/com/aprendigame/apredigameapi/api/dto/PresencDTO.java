@@ -1,7 +1,5 @@
 package com.aprendigame.apredigameapi.api.dto;
 
-import com.aprendigame.apredigameapi.model.entity.Student;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +13,6 @@ public class PresencDTO {
 	private String courseClassCode;
 	private String date;
 	private String hour;
-	private Student student;
+	private String student;
 
 }
