@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.QuizzDTO;
-import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.Quizz;
@@ -36,7 +35,7 @@ public class QuizzResource {
 		quizz.setCode(dto.getCode());
 		quizz.setTitle(dto.getTitle());
 		
-		CourseClass courseClass = courseClassService.findById(dto.getCourseClassId())
+		CourseClass courseClass = courseClassService.findByCode(dto.getCourseClassCode())
 				.orElseThrow(() -> new BusinessRuleException("Não foi possivel concluir a ação, matéria não encontrada no sistema"));
 		
 		quizz.setCourseClass(courseClass);

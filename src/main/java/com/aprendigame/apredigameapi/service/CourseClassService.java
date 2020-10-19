@@ -13,5 +13,6 @@ public interface CourseClassService {
 	
 	void validateCodeAndCourseUnit(String code, CoursesUnit courseUnit);
 	
-	Optional<CourseClass> findById(Long id);
+	Optional<CourseClass> findByCode(String code);
+	
 }
