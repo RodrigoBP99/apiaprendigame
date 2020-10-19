@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.PresencDTO;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
+import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.Presenc;
 import com.aprendigame.apredigameapi.model.entity.Student;
+import com.aprendigame.apredigameapi.service.CourseClassService;
 import com.aprendigame.apredigameapi.service.PresencService;
 import com.aprendigame.apredigameapi.service.StudentService;
 
@@ -26,14 +28,16 @@ public class PresencResource {
 
 	private PresencService service;
 	private StudentService studentService;
+	private CourseClassService courseClassService;
 	
-	public PresencResource(PresencService service, StudentService studentService) {
+	public PresencResource(PresencService service, StudentService studentService, CourseClassService courseClassService) {
 		this.service = service;
 		this.studentService = studentService;
+		this.courseClassService = courseClassService;
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity search(
+	public ResponseEntity<Object> search(
 			@RequestParam(value = "studentRegistration", required = false) String studentRegistration,
 			@RequestParam(value = "code", required = false)String code,
 			@RequestParam(value = "date", required = false)String date,
@@ -51,8 +55,10 @@ public class PresencResource {
 		
 		if (courseClassCode.isBlank()) {
 			return ResponseEntity.badRequest().body("É necessario preencher o campo Código da Aula");
-		} else { 
-			presencFilter.setCourseClassCode(courseClassCode);
+		} else {
+			CourseClass courseClass = courseClassService.findByCode(courseClassCode)
+					.orElseThrow(() -> new BusinessRuleException("Não foi encontrado uma Matéria com esse código"));
+			presencFilter.setCourseClass(courseClass);
 		}
 		
 		
@@ -75,9 +81,13 @@ public class PresencResource {
 	private Presenc convert(PresencDTO dto) {
 		Presenc presenc = new Presenc();
 		presenc.setCode(dto.getCode());
-		presenc.setCourseClassCode(dto.getCourseClassCode());
 		presenc.setDate(dto.getDate());
 		presenc.setHour(dto.getHour());
+		
+		CourseClass courseClass = courseClassService.findByCode(dto.getCode())
+				.orElseThrow(() -> new BusinessRuleException("Não foi encontrado uma Matéria com esse código"));
+		
+		presenc.setCourseClass(courseClass);
 		
 		Student student = studentService.findByRegistration(dto.getStudentRegistration())
 				.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para a matricula informada"));
