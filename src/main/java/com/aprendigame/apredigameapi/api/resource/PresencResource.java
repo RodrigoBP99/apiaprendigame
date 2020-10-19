@@ -1,16 +1,19 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.PresencDTO;
-import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.Presenc;
 import com.aprendigame.apredigameapi.model.entity.Student;
@@ -29,16 +32,32 @@ public class PresencResource {
 		this.studentService = studentService;
 	}
 	
-	@PostMapping("/find")
-	public ResponseEntity<Serializable> authenticate(@RequestBody PresencDTO dto){
-		try {
-			
-			Presenc authenticatedPresenc = convert(dto);
-			authenticatedPresenc = service.authenticate(authenticatedPresenc.getCode(), authenticatedPresenc.getStudent());
-			return ResponseEntity.ok(authenticatedPresenc);
-		} catch (AutenticationError e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
+	@GetMapping("/search")
+	public ResponseEntity search(
+			@RequestParam(value = "studentRegistration", required = false) String studentRegistration,
+			@RequestParam(value = "code", required = false)String code,
+			@RequestParam(value = "date", required = false)String date,
+			@RequestParam("courseClassCode") String courseClassCode
+			) {
+		
+		Presenc presencFilter = new Presenc();
+		presencFilter.setCode(code);
+		presencFilter.setDate(date);
+		
+		Optional<Student> student = studentService.findByRegistration(studentRegistration);
+		if (student.isPresent()) {
+			presencFilter.setStudent(student.get());
 		}
+		
+		if (courseClassCode.isBlank()) {
+			return ResponseEntity.badRequest().body("É necessario preencher o campo Código da Aula");
+		} else { 
+			presencFilter.setCourseClassCode(courseClassCode);
+		}
+		
+		
+		List<Presenc> presencs = service.search(presencFilter);
+		return ResponseEntity.ok(presencs);
 	}
 	
 	@PostMapping("/save")

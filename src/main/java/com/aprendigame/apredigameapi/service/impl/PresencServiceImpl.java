@@ -1,7 +1,11 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.stereotype.Service;
 
 import com.aprendigame.apredigameapi.exception.AutenticationError;
@@ -21,7 +25,6 @@ public class PresencServiceImpl implements PresencService {
 		this.repository = repository;
 	}
 	
-
 	@Override
 	public Presenc authenticate(String code, Student student) {
 		Optional<Presenc> presenc = repository.findByCodeAndStudent(code, student);
@@ -36,6 +39,15 @@ public class PresencServiceImpl implements PresencService {
 		return presenc.get();
 	}
 
+	@Override
+	public List<Presenc> search(Presenc presencFilter){
+		Example<Presenc> example = Example.of(presencFilter,
+				ExampleMatcher.matching()
+					.withIgnoreCase()
+					.withStringMatcher(StringMatcher.CONTAINING));
+		
+		return repository.findAll(example);
+	}
 
 	@Override
 	public Presenc savePresenc(Presenc presenc) {
