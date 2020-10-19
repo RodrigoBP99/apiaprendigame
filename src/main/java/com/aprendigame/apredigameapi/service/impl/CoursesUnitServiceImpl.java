@@ -45,4 +45,9 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 			throw new BusinessRuleException("Já existe um Curso com esse Código");
 		}
 	}
+	
+	@Override
+	public Optional<CoursesUnit> findByCode(String code) {
+		return repository.findByCode(code);
+	}
 }
