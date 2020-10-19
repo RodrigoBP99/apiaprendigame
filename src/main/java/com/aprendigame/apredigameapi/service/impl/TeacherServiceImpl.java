@@ -53,4 +53,9 @@ public class TeacherServiceImpl implements TeacherService {
 		
 	}
 
+	@Override
+	public Optional<Teacher> findByRegistration(String registration) {
+		return repository.findByRegistration(registration);
+	}
+
 }

@@ -41,6 +41,8 @@ public class TeacherResource {
 		teacher.setName(dto.getName());
 		teacher.setRegistration(dto.getRegistration());
 		teacher.setPassword(dto.getPassword());
+		teacher.setCourseclasses(dto.getCourseclasses());
+		teacher.setCourses(dto.getCourses());
 		
 		try {
 			Teacher savedTeacher = service.saveTeacher(teacher);
