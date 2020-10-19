@@ -53,7 +53,7 @@ public class CourseClassServiceImpl implements CourseClassService{
 	}
 
 	@Override
-	public Optional<CourseClass> findById(Long id) {
-		return repository.findById(id);
+	public Optional<CourseClass> findByCode(String code) {
+		return repository.findByCode(code);
 	}
 }

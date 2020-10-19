@@ -31,7 +31,8 @@ public class AnswerResource {
 		Answer answer = new Answer();
 		answer.setText(dto.getText());
 		answer.setAnswerType(dto.getAnswerType());
-		
+
+	
 		Question question = serviceQuestion.findById(dto.getQuestionId())
 				.orElseThrow(() -> new BusinessRuleException("Não foi possivel encontrar a questão para adicionar essa resposta"));
 		

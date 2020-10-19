@@ -1,8 +1,6 @@
 package com.aprendigame.apredigameapi.api.dto;
 
 import java.util.List;
-
-import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.Question;
 
 import lombok.Builder;
@@ -16,7 +14,7 @@ public class QuizzDTO {
 	
 	private String code;
 	private String title;
-	private Long courseClassId;
+	private String courseClassCode;
 	private String amountOfQuestions;
 	private List<Question> questions;
 	private Double points;

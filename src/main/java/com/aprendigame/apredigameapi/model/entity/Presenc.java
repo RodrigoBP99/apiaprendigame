@@ -26,7 +26,7 @@ public class Presenc implements Serializable {
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private String id;
 	private String code;
-	private String courseClassCode;
+	private CourseClass courseClass;
 	private String date;
 	private String hour;
 	@ManyToOne

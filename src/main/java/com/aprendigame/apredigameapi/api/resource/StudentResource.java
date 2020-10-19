@@ -54,6 +54,7 @@ public class StudentResource {
 		}
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PutMapping("/update/{registration}")
 	public ResponseEntity updateStudent(@PathVariable("registration") String registration, @RequestBody StudentDTO dto) {
 		return service.findByRegistration(registration).map(entity -> {
