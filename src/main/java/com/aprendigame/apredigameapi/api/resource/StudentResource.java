@@ -1,11 +1,9 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -52,17 +50,6 @@ public class StudentResource {
 			
 			return new ResponseEntity<Serializable>(savedStudent, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
-
-	@GetMapping("/find/{registration}")
-	public ResponseEntity<Object> find(@PathVariable String registration){
-		try {
-			Optional<Student> student = service.findByRegistration(registration);
-			
-			return ResponseEntity.ok(student);
-		}catch (AutenticationError e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
