@@ -34,5 +34,7 @@ public class CoursesUnit implements Serializable {
 	private List<Teacher> teachers;
 	@OneToMany(mappedBy = "courseUnit", cascade = CascadeType.ALL)
 	private List<CourseClass> courseClasses;
+	@OneToMany(mappedBy = "courseUnit")
+	private List<Student> students;
 	
 }

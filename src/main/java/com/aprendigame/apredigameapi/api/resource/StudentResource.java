@@ -44,7 +44,7 @@ public class StudentResource {
 		student.setRegistration(dto.getRegistration());
 		student.setPhoto(dto.getPhoto());
 		student.setSchoolName(dto.getSchoolName());
-		student.setCourseName(dto.getSchoolName());
+		student.setCourseUnit(dto.getCourseUnit());
 		student.setBirthday(dto.getBirthday());
 		student.setPassword(dto.getPassword());
 		student.setActualLevel(1);

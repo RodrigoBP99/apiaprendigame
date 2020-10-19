@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -33,7 +34,8 @@ public class Student implements Serializable{
 	private String name;
 	private String registration;
 	private String password;
-	private String courseName;
+	@ManyToOne
+	private CoursesUnit courseUnit;
 	private String photo;
 	private String schoolName;
 	private String birthday;
