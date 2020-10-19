@@ -1,5 +1,7 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.aprendigame.apredigameapi.model.entity.Question;
@@ -19,6 +21,11 @@ public class QuestionServiceImpl implements QuestionService {
 	@Override
 	public Question saveQuestion(Question question) {
 		return repository.save(question);
+	}
+
+	@Override
+	public Optional<Question> findById(Long id) {
+		return repository.findById(id);
 	}
 
 }
