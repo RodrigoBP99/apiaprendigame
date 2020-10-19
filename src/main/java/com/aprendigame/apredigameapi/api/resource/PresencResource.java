@@ -60,7 +60,7 @@ public class PresencResource {
 		presenc.setDate(dto.getDate());
 		presenc.setHour(dto.getHour());
 		
-		Student student = studentService.findByRegistration(dto.getStudent())
+		Student student = studentService.findByRegistration(dto.getStudentRegistration())
 				.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para a matricula informada"));
 		
 		presenc.setStudent(student);
