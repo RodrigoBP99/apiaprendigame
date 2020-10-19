@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -35,6 +36,13 @@ public class StudentServiceImpl implements StudentService{
 		
 		return student.get();
 	}
+	
+	@Override
+	@Transactional
+	public Student updateStudent(Student student) {
+		Objects.requireNonNull(student.getId());
+		return repository.save(student);
+	}
 
 	@Override
 	@Transactional
@@ -50,6 +58,11 @@ public class StudentServiceImpl implements StudentService{
 		if(exists) {
 			throw new BusinessRuleException("Já existe um estudante cadastrado com esse matricula");
 		}
+	}
+	
+	@Override
+	public Optional<Student> findByRegistration(String registration){
+		return repository.findByRegistration(registration);
 	}
 
 }
