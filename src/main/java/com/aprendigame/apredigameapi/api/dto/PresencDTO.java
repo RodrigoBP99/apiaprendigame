@@ -13,6 +13,6 @@ public class PresencDTO {
 	private String courseClassCode;
 	private String date;
 	private String hour;
-	private String student;
+	private String studentRegistration;
 
 }
