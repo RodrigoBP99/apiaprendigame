@@ -51,4 +51,9 @@ public class CourseClassServiceImpl implements CourseClassService{
 			throw new BusinessRuleException("Já existe uma Matéria com esse Código");
 		}
 	}
+
+	@Override
+	public Optional<CourseClass> findById(Long id) {
+		return repository.findById(id);
+	}
 }
