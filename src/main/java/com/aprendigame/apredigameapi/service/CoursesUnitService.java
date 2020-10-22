@@ -13,5 +13,7 @@ public interface CoursesUnitService {
 	void validateCode(String code);
 	
 	Optional<CoursesUnit> findByCode(String code);
+	
+	CoursesUnit updateCourseUnit(CoursesUnit courseUnit);
 
 }
