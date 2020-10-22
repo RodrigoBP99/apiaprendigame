@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -55,5 +56,12 @@ public class CourseClassServiceImpl implements CourseClassService{
 	@Override
 	public Optional<CourseClass> findByCode(String code) {
 		return repository.findByCode(code);
+	}
+
+	@Override
+	public CourseClass updateCourseClass(CourseClass courseClass) {
+		Objects.requireNonNull(courseClass.getId());
+		Objects.requireNonNull(courseClass.getCode());
+		return repository.save(courseClass);
 	}
 }

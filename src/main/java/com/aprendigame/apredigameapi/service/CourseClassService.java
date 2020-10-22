@@ -15,4 +15,6 @@ public interface CourseClassService {
 	
 	Optional<CourseClass> findByCode(String code);
 	
+	CourseClass updateCourseClass(CourseClass courseClass);
+	
 }

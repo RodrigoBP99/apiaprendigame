@@ -1,7 +1,6 @@
 package com.aprendigame.apredigameapi.api.dto;
 
 import com.aprendigame.apredigameapi.model.entity.Quizz;
-import com.aprendigame.apredigameapi.model.entity.Student;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class CourseClassDTO {
 
 	private String name;
 	private String code;
-	private List<Student> students;
+	private String studentRegistration;
 	private String courseUnitCode;
 	private String teacherRegistration;
 	private List<Quizz> quizzes;
