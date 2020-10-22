@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -55,6 +56,13 @@ public class QuizzServiceImpl implements QuizzService{
 	@Override
 	public Optional<Quizz> findById(Long id) {
 		return repository.findById(id);
+	}
+
+	@Override
+	public Quizz updateQuizz(Quizz quizz) {
+		Objects.requireNonNull(quizz.getId());
+		Objects.requireNonNull(quizz.getCode());
+		return quizz;
 	}
 		
 }

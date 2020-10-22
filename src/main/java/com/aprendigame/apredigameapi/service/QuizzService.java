@@ -14,4 +14,6 @@ public interface QuizzService {
 	void validateCodeAndCourseClass(String code, CourseClass courseClass);
 	
 	Optional<Quizz> findById(Long id);
+	
+	Quizz updateQuizz(Quizz quizz);
 }
