@@ -12,6 +12,6 @@ public interface PresencRepository extends JpaRepository<Presenc, Long>{
 	
 	boolean existsByCodeAndStudentAndCourseClass(String code, Student student, CourseClass courseClass);
 	
-	Optional<Presenc> findByCodeAndStudents(String code, Student student);
+	Optional<Presenc> findByCodeAndStudent(String code, Student student);
 
 }
