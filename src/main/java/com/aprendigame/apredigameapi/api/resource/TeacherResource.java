@@ -37,19 +37,23 @@ public class TeacherResource {
 	
 	@PostMapping("/register")
 	public ResponseEntity<Serializable> save(@RequestBody TeacherDTO dto){
-		Teacher teacher = new Teacher();
-		teacher.setName(dto.getName());
-		teacher.setRegistration(dto.getRegistration());
-		teacher.setPassword(dto.getPassword());
-		teacher.setCourseclasses(dto.getCourseclasses());
-		teacher.setCourses(dto.getCourses());
-		
 		try {
-			Teacher savedTeacher = service.saveTeacher(teacher);
+			Teacher savedTeacher = convert(dto);
+			savedTeacher = service.saveTeacher(savedTeacher);
 			
 			return new ResponseEntity<Serializable>(savedTeacher, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
+	}
+	
+	private Teacher convert(TeacherDTO dto) {
+		Teacher teacher = new Teacher();
+		teacher.setName(dto.getName());
+		teacher.setRegistration(dto.getRegistration());
+		teacher.setPassword(dto.getPassword());
+		teacher.setPhoto(dto.getPhoto());
+		
+		return teacher;
 	}
 }

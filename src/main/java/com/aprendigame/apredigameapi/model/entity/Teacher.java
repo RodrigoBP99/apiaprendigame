@@ -29,6 +29,7 @@ public class Teacher implements Serializable {
 	private Long id;
 	private String name;
 	private String registration;
+	private String photo;
 	private String password;
 	@ManyToMany
 	private List<CoursesUnit> courses;

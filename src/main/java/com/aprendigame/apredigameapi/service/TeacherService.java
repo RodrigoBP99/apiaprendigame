@@ -13,4 +13,6 @@ public interface TeacherService {
 	void validateRegistration(String registration);
 	
 	Optional<Teacher> findByRegistration(String registration);
+	
+	Teacher updateTeacher(Teacher teacher);
 }

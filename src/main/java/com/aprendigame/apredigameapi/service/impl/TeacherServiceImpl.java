@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -56,6 +57,13 @@ public class TeacherServiceImpl implements TeacherService {
 	@Override
 	public Optional<Teacher> findByRegistration(String registration) {
 		return repository.findByRegistration(registration);
+	}
+
+	@Override
+	public Teacher updateTeacher(Teacher teacher) {
+		Objects.requireNonNull(teacher.getId());
+		Objects.requireNonNull(teacher.getRegistration());
+		return repository.save(teacher);
 	}
 
 }
