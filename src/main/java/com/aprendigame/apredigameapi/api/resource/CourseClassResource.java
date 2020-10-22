@@ -108,6 +108,28 @@ public class CourseClassResource {
 			}
 		}).orElseGet(() -> new ResponseEntity("Matéria não encontrado na nossa base de dados", HttpStatus.BAD_REQUEST));
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@PutMapping("/{code}/remove_student")
+	public ResponseEntity removeStudentOnCourseClass(@PathVariable("code") String code, @RequestBody CourseClassDTO dto) {
+		return service.findByCode(code).map(entity -> {
+			try {
+				CourseClass courseClass = entity;
+				Student student = studentService.findByRegistration(dto.getStudentRegistration())
+						.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para essa matricula"));
+
+				List<Student> students = courseClass.getStudents();
+				students.remove(student);
+
+				courseClass.setStudents(students);
+
+				service.updateCourseClass(courseClass);
+				return ResponseEntity.ok(courseClass);
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Matéria não encontrado na nossa base de dados", HttpStatus.BAD_REQUEST));
+	}
 
 	private CourseClass convert(CourseClassDTO dto) {
 		CourseClass courseClass = new CourseClass();
