@@ -1,16 +1,12 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.PresencDTO;
@@ -35,37 +31,7 @@ public class PresencResource {
 		this.studentService = studentService;
 		this.courseClassService = courseClassService;
 	}
-	
-	@GetMapping("/search")
-	public ResponseEntity<Object> search(
-			@RequestParam(value = "studentRegistration", required = false) String studentRegistration,
-			@RequestParam(value = "code", required = false)String code,
-			@RequestParam(value = "date", required = false)String date,
-			@RequestParam("courseClassCode") String courseClassCode
-			) {
 		
-		Presenc presencFilter = new Presenc();
-		presencFilter.setCode(code);
-		presencFilter.setDate(date);
-		
-		Optional<Student> student = studentService.findByRegistration(studentRegistration);
-		if (student.isPresent()) {
-			presencFilter.setStudent(student.get());
-		}
-		
-		if (courseClassCode.isBlank()) {
-			return ResponseEntity.badRequest().body("É necessario preencher o campo Código da Aula");
-		} else {
-			CourseClass courseClass = courseClassService.findByCode(courseClassCode)
-					.orElseThrow(() -> new BusinessRuleException("Não foi encontrado uma Matéria com esse código"));
-			presencFilter.setCourseClass(courseClass);
-		}
-		
-		
-		List<Presenc> presencs = service.search(presencFilter);
-		return ResponseEntity.ok(presencs);
-	}
-	
 	@PostMapping("/save")
 	public ResponseEntity<Serializable> save(@RequestBody PresencDTO dto){		
 		try {
@@ -84,7 +50,7 @@ public class PresencResource {
 		presenc.setDate(dto.getDate());
 		presenc.setHour(dto.getHour());
 		
-		CourseClass courseClass = courseClassService.findByCode(dto.getCode())
+		CourseClass courseClass = courseClassService.findByCode(dto.getCourseClassCode())
 				.orElseThrow(() -> new BusinessRuleException("Não foi encontrado uma Matéria com esse código"));
 		
 		presenc.setCourseClass(courseClass);
