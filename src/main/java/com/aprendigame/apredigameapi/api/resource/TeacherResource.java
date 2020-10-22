@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +35,23 @@ public class TeacherResource {
 		} catch (AutenticationError e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@PutMapping("/update/{registration}")
+	public ResponseEntity update(@PathVariable("registration") String registration, @RequestBody TeacherDTO dto) {
+		return service.findByRegistration(registration).map(entity -> {
+			try {
+				Teacher teacher = convert(dto);
+				teacher.setId(entity.getId());
+				teacher.setRegistration(entity.getRegistration());
+				
+				service.updateTeacher(teacher);
+				return ResponseEntity.ok(teacher);
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Professor não encontrado para essa matricula", HttpStatus.BAD_REQUEST));
 	}
 	
 	@PostMapping("/register")
