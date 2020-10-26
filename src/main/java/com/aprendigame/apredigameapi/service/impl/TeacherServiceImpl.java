@@ -41,6 +41,15 @@ public class TeacherServiceImpl implements TeacherService {
 	@Transactional
 	public Teacher saveTeacher(Teacher teacher) {
 		validateRegistration(teacher.getRegistration());
+		
+		if(teacher.getRegistration() == null) {
+			throw new BusinessRuleException("A matricula não pode ser vazia");
+		}
+		
+		if(teacher.getPassword() == null){
+			throw new BusinessRuleException("A senha não pode ser vazia");
+		}
+		
 		return repository.save(teacher);
 	}
 
