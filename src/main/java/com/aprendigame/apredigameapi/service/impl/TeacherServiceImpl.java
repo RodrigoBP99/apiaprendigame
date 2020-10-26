@@ -75,4 +75,9 @@ public class TeacherServiceImpl implements TeacherService {
 		return repository.save(teacher);
 	}
 
+	@Override
+	public Optional<Teacher> findById(Long id) {
+		return repository.findById(id);
+	}
+
 }

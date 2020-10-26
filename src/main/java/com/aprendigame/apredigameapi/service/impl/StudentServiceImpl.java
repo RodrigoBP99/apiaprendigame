@@ -48,6 +48,15 @@ public class StudentServiceImpl implements StudentService{
 	@Transactional
 	public Student saveStudent(Student student) {
 		validateRegistration(student.getRegistration());
+		
+		if(student.getRegistration() == null) {
+			throw new BusinessRuleException("A matricula não pode ser vazia");
+		}
+		
+		if(student.getPassword() == null){
+			throw new BusinessRuleException("A senha não pode ser vazia");
+		}
+		
 		return repository.save(student);
 	}
 
