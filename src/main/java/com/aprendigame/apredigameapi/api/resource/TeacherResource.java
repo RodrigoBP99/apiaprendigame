@@ -1,9 +1,11 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -63,6 +65,25 @@ public class TeacherResource {
 			return new ResponseEntity<Serializable>(savedTeacher, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/{id}/classesLength")
+	public ResponseEntity<Integer> getClassesLength(@PathVariable("id") Long id) {
+		Optional<Teacher> teacher = service.findById(id);
+		
+		if(!teacher.isPresent()) {
+			return new ResponseEntity<Integer>(HttpStatus.NOT_FOUND);
+		}
+		
+		int classesLength;
+		
+		if(teacher.get().getCourseclasses() == null) {
+			classesLength = 0;
+			return ResponseEntity.ok(classesLength);
+		} else {
+			classesLength = teacher.get().getCourseclasses().size();
+			return ResponseEntity.ok(classesLength);
 		}
 	}
 	

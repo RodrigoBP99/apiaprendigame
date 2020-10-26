@@ -14,5 +14,7 @@ public interface TeacherService {
 	
 	Optional<Teacher> findByRegistration(String registration);
 	
+	Optional<Teacher> findById(Long id);
+	
 	Teacher updateTeacher(Teacher teacher);
 }
