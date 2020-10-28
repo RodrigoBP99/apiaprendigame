@@ -15,12 +15,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "student", schema = "aprendigameapi")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -35,6 +37,7 @@ public class Student implements Serializable{
 	private String registration;
 	private String password;
 	@ManyToOne
+	@JoinColumn(name = "courseUnit_id")
 	private CoursesUnit courseUnit;
 	private String photo;
 	private String schoolName;
@@ -42,7 +45,7 @@ public class Student implements Serializable{
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
 	private List<Presenc> presences;
 	@ManyToMany
-	@JoinColumn(name = "student_id")
+	@JoinColumn(name = "courseClass_id")
 	private List<CourseClass> listClass;
 	private double points;
 	private double requiredPoints;

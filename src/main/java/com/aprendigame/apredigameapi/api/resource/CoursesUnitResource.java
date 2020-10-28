@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.CoursesUnitDTO;
-import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.service.CoursesUnitService;
@@ -25,16 +24,6 @@ public class CoursesUnitResource {
 	
 	public CoursesUnitResource(CoursesUnitService service) {
 		this.service = service;
-	}
-	
-	@PostMapping("/find")
-	public ResponseEntity<Serializable> findCourseUnit(@RequestBody CoursesUnitDTO dto) {
-		try {
-			CoursesUnit authenticatedCoursesUnit = service.authenticate(dto.getCode());
-			return ResponseEntity.ok(authenticatedCoursesUnit);
-		} catch (AutenticationError e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -63,7 +52,6 @@ public class CoursesUnitResource {
 			return new ResponseEntity<Serializable>(savedCourseUnit, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
-			// TODO: handle exception
 		}
 		
 	}

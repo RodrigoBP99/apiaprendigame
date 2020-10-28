@@ -10,6 +10,9 @@ public interface CoursesUnitRepository extends JpaRepository<CoursesUnit, Long>{
 	
 	boolean existsByCode(String code);
 	
+	Optional<CoursesUnit> findById(Long id);
+	
 	Optional<CoursesUnit> findByCode(String code);
+
 
 }

@@ -36,6 +36,7 @@ public class CourseClass implements Serializable{
 	@JoinColumn(name = "student_id")
 	private List<Student> students;
 	@ManyToOne
+	@JoinColumn(name = "courseUnit_id")
 	private CoursesUnit courseUnit;
 	@ManyToOne
 	private Teacher teacher;

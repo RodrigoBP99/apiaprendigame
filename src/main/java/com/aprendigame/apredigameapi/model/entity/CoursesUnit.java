@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -31,6 +32,7 @@ public class CoursesUnit implements Serializable {
 	private String name;
 	private String code;
 	@ManyToMany
+	@JoinColumn(name = "teacher_id")
 	private List<Teacher> teachers;
 	@OneToMany(mappedBy = "courseUnit", cascade = CascadeType.ALL)
 	private List<CourseClass> courseClasses;

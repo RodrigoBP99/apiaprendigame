@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -31,6 +32,7 @@ public class Quizz implements Serializable{
 	private String code;
 	private String title;
 	@ManyToOne
+	@JoinColumn(name = "courseClass_id")
 	private CourseClass courseClass;
 	private String amountOfQuestions;
 	@OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL)

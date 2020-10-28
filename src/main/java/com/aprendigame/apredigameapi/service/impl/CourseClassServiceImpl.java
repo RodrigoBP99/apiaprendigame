@@ -1,12 +1,15 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
@@ -21,20 +24,6 @@ public class CourseClassServiceImpl implements CourseClassService{
 	public CourseClassServiceImpl(CourseClassRepository repository) {
 		super();
 		this.repository = repository;
-	}
-
-	@Override
-	public CourseClass findCourseClass(String code, CoursesUnit coursesUnit) {
-		Optional<CourseClass> courseClass = repository.findByCodeAndCourseUnit(code, coursesUnit);
-		
-		if(!courseClass.isPresent()) {
-			throw new AutenticationError("Não foi possivel encontrar uma Matéria com esse código");
-		}
-		
-		if (!courseClass.get().getCourseUnit().equals(coursesUnit)) {
-			throw new AutenticationError("Não foi possivel encontrar uma Matéria com esse código Para esse Curso");
-		}
-		return courseClass.get();
 	}
 	
 	@Override
@@ -54,14 +43,30 @@ public class CourseClassServiceImpl implements CourseClassService{
 	}
 
 	@Override
-	public Optional<CourseClass> findByCode(String code) {
-		return repository.findByCode(code);
-	}
-
-	@Override
 	public CourseClass updateCourseClass(CourseClass courseClass) {
 		Objects.requireNonNull(courseClass.getId());
 		Objects.requireNonNull(courseClass.getCode());
 		return repository.save(courseClass);
+	}
+
+	@Override
+	public List<CourseClass> search(CourseClass courseClassFiler) {
+		Example example = Example.of(courseClassFiler,
+				ExampleMatcher.matching()
+					.withIgnoreCase()
+					.withStringMatcher(StringMatcher.CONTAINING));
+		
+		return repository.findAll(example);
+	}
+
+	@Override
+	public Optional<CourseClass> findById(Long id) {
+		return repository.findById(id);
+	}
+
+	@Override
+	public void deleteCourseClass(CourseClass courseClass) {
+		Objects.requireNonNull(courseClass.getId());
+		repository.delete(courseClass);
 	}
 }

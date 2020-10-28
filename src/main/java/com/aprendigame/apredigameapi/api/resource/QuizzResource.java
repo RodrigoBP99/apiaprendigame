@@ -65,7 +65,7 @@ public class QuizzResource {
 		quizz.setCode(dto.getCode());
 		quizz.setTitle(dto.getTitle());
 		
-		CourseClass courseClass = courseClassService.findByCode(dto.getCourseClassCode())
+		CourseClass courseClass = courseClassService.findById(dto.getCourseClassId())
 				.orElseThrow(() -> new BusinessRuleException("Não foi possivel concluir a ação, matéria não encontrada no sistema"));
 		
 		quizz.setCourseClass(courseClass);

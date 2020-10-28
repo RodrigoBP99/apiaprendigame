@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PresencDTO {
 	
 	private String code;
-	private String courseClassCode;
+	private Long courseClassId;
 	private String date;
 	private String hour;
 	private String studentRegistration;

@@ -50,7 +50,7 @@ public class PresencResource {
 		presenc.setDate(dto.getDate());
 		presenc.setHour(dto.getHour());
 		
-		CourseClass courseClass = courseClassService.findByCode(dto.getCourseClassCode())
+		CourseClass courseClass = courseClassService.findById(dto.getCourseClassId())
 				.orElseThrow(() -> new BusinessRuleException("Não foi encontrado uma Matéria com esse código"));
 		
 		presenc.setCourseClass(courseClass);

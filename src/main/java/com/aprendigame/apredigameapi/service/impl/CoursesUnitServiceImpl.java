@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.model.repository.CoursesUnitRepository;
@@ -20,18 +19,7 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 		super();
 		this.repository = repository;
 	}
-
-	@Override
-	public CoursesUnit authenticate(String code) {
-		Optional<CoursesUnit> coursesUnit = repository.findByCode(code);
-		
-		if (!coursesUnit.isPresent()) {
-			throw new AutenticationError("Não foi possivel encontrar nenhum Curso com esse código");
-		}
-		
-		return coursesUnit.get();
-	}
-
+	
 	@Override
 	public CoursesUnit saveCoursesUnit(CoursesUnit coursesUnit) {
 		validateCode(coursesUnit.getCode());
@@ -48,8 +36,8 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 	}
 	
 	@Override
-	public Optional<CoursesUnit> findByCode(String code) {
-		return repository.findByCode(code);
+	public Optional<CoursesUnit> findById(Long id) {
+		return repository.findById(id);
 	}
 
 	@Override
@@ -57,5 +45,10 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 		Objects.requireNonNull(courseUnit.getId());
 		Objects.requireNonNull(courseUnit.getCode());
 		return repository.save(courseUnit);
+	}
+
+	@Override
+	public Optional<CoursesUnit> findByCode(String code) {
+		return repository.findByCode(code);
 	}
 }

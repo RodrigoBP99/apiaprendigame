@@ -13,6 +13,4 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Long>{
 	
 	Optional<CourseClass> findByCodeAndCourseUnit(String code, CoursesUnit coursesUnit);
 	
-	Optional<CourseClass> findByCode(String code);
-
 }

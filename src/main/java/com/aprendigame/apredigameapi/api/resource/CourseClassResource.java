@@ -6,13 +6,14 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.CourseClassDTO;
@@ -45,6 +46,42 @@ public class CourseClassResource {
 		this.teacherService = teacherService;
 		this.studentService = studentService;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@GetMapping
+	public ResponseEntity findCourseClass(
+			@RequestParam(value = "name", required = false) String name,
+			@RequestParam(value = "courseUnit", required = false)String courseUnit,
+			@RequestParam("teacher")String teacher) {
+		
+		CourseClass courseClassFilter = new CourseClass();
+		courseClassFilter.setName(name);
+		
+		Optional<Teacher> teacherCourseClass = teacherService.findByRegistration(teacher);
+		if(!teacherCourseClass.isPresent()) {
+			return ResponseEntity.badRequest().body("Não foi possivel encontra nenhum professor com esse codigo");
+		} else {
+			courseClassFilter.setTeacher(teacherCourseClass.get());
+		}
+		
+		Optional<CoursesUnit> courseUnitCourseClass = courseUnitService.findByCode(courseUnit);
+		if(courseUnitCourseClass.isPresent()) {
+			courseClassFilter.setCourseUnit(courseUnitCourseClass.get());
+		}
+		
+		List<CourseClass> courseClasses = service.search(courseClassFilter);
+		return ResponseEntity.ok(courseClasses);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@DeleteMapping("{id}")
+	public ResponseEntity delete(@PathVariable("id") Long id) {
+		return service.findById(id).map(entity -> {
+			service.deleteCourseClass(entity);
+			return new ResponseEntity(HttpStatus.NO_CONTENT);
+		}).orElseGet(() ->
+			new ResponseEntity("Classe não encontrada no banco de dados", HttpStatus.BAD_REQUEST));
+	}
 
 	@PostMapping("/save")
 	public ResponseEntity<Serializable> save(@RequestBody CourseClassDTO dto) {
@@ -57,10 +94,10 @@ public class CourseClassResource {
 		}
 	}
 
-	@GetMapping("/{code}")
-	public ResponseEntity<Object> findCourseClass(@PathVariable("code") String code) {
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> findCourseClass(@PathVariable("id") Long id) {
 		try {
-			Optional<CourseClass> courseClass = service.findByCode(code);
+			Optional<CourseClass> courseClass = service.findById(id);
 
 			return new ResponseEntity<Object>(courseClass, HttpStatus.FOUND);
 		} catch (BusinessRuleException e) {
@@ -69,9 +106,9 @@ public class CourseClassResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/update/{code}")
-	public ResponseEntity update(@PathVariable("code")String code, @RequestBody CourseClassDTO dto ) {
-		return service.findByCode(code).map(entity -> {
+	@PutMapping("/update/{id}")
+	public ResponseEntity update(@PathVariable("id")Long id, @RequestBody CourseClassDTO dto ) {
+		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = convert(dto);
 				courseClass.setId(entity.getId());
@@ -88,9 +125,9 @@ public class CourseClassResource {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/{code}/include_student")
-	public ResponseEntity includeStudentOnCourseClass(@PathVariable("code") String code, @RequestBody CourseClassDTO dto) {
-		return service.findByCode(code).map(entity -> {
+	@PutMapping("/{id}/include_student")
+	public ResponseEntity includeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
 				Student student = studentService.findByRegistration(dto.getStudentRegistration())
@@ -110,9 +147,9 @@ public class CourseClassResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/{code}/remove_student")
-	public ResponseEntity removeStudentOnCourseClass(@PathVariable("code") String code, @RequestBody CourseClassDTO dto) {
-		return service.findByCode(code).map(entity -> {
+	@PutMapping("/{id}/remove_student")
+	public ResponseEntity removeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
 				Student student = studentService.findByRegistration(dto.getStudentRegistration())
@@ -132,9 +169,9 @@ public class CourseClassResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/{code}/include_teacher")
-	public ResponseEntity includeTeacherOnCourseClass(@PathVariable("code") String code, @RequestBody CourseClassDTO dto) {
-		return service.findByCode(code).map(entity -> {
+	@PutMapping("/{id}/include_teacher")
+	public ResponseEntity includeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
 				Teacher teacher = teacherService.findByRegistration(dto.getTeacherRegistration())
@@ -151,9 +188,9 @@ public class CourseClassResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/{code}/remove_teacher")
-	public ResponseEntity removeTeacherOnCourseClass(@PathVariable("code") String code, @RequestBody CourseClassDTO dto) {
-		return service.findByCode(code).map(entity -> {
+	@PutMapping("/{id}/remove_teacher")
+	public ResponseEntity removeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
 				Teacher teacher = teacherService.findByRegistration(dto.getTeacherRegistration())
