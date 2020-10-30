@@ -1,16 +1,13 @@
 package com.aprendigame.apredigameapi.model.entity;
 
 import java.io.Serializable;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -33,10 +30,8 @@ public class Teacher implements Serializable {
 	private String registration;
 	private String photo;
 	private String password;
-	@ManyToMany
+	@ManyToOne
 	@JoinColumn(name = "courseUnit_id")
-	private List<CoursesUnit> courses;
-	@OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
-	private List<CourseClass> courseclasses;
+	private CoursesUnit courseUnit;
 
 }
