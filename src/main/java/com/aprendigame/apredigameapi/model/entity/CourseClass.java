@@ -33,12 +33,12 @@ public class CourseClass implements Serializable{
 	private String name;
 	private String code;
 	@ManyToMany
-	@JoinColumn(name = "student_id")
 	private List<Student> students;
 	@ManyToOne
 	@JoinColumn(name = "courseUnit_id")
 	private CoursesUnit courseUnit;
 	@ManyToOne
+	@JoinColumn(name = "teacher_id")
 	private Teacher teacher;
 	@OneToMany(mappedBy = "courseClass", cascade = CascadeType.ALL)
 	private List<Quizz> quizzes;

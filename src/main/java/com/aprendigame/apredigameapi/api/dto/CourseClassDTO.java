@@ -19,6 +19,7 @@ public class CourseClassDTO {
 	private String code;
 	private String studentRegistration;
 	private String courseUnitCode;
+	private Long teacherId;
 	private String teacherRegistration;
 	private List<Quizz> quizzes;
 }
