@@ -52,12 +52,12 @@ public class CourseClassResource {
 	public ResponseEntity findCourseClass(
 			@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "courseUnit", required = false)String courseUnit,
-			@RequestParam("teacher")String teacher) {
+			@RequestParam("teacher")Long teacher) {
 		
 		CourseClass courseClassFilter = new CourseClass();
 		courseClassFilter.setName(name);
 		
-		Optional<Teacher> teacherCourseClass = teacherService.findByRegistration(teacher);
+		Optional<Teacher> teacherCourseClass = teacherService.findById(teacher);
 		if(!teacherCourseClass.isPresent()) {
 			return ResponseEntity.badRequest().body("Não foi possivel encontra nenhum professor com esse codigo");
 		} else {
@@ -89,17 +89,6 @@ public class CourseClassResource {
 			CourseClass savedCourseClass = convert(dto);
 			savedCourseClass = service.saveCourseClass(savedCourseClass);
 			return new ResponseEntity<Serializable>(savedCourseClass, HttpStatus.CREATED);
-		} catch (BusinessRuleException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<Object> findCourseClass(@PathVariable("id") Long id) {
-		try {
-			Optional<CourseClass> courseClass = service.findById(id);
-
-			return new ResponseEntity<Object>(courseClass, HttpStatus.FOUND);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -220,7 +209,7 @@ public class CourseClassResource {
 
 		courseClass.setCourseUnit(courseUnit);
 
-		Optional<Teacher> teacher = teacherService.findByRegistration(dto.getTeacherRegistration());
+		Optional<Teacher> teacher = teacherService.findById(dto.getTeacherId());
 		if (teacher.isPresent()) {
 			courseClass.setTeacher(teacher.get());
 		}

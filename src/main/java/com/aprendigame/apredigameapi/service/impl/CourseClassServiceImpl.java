@@ -38,7 +38,7 @@ public class CourseClassServiceImpl implements CourseClassService{
 		boolean exists = repository.existsByCodeAndCourseUnit(code, coursesUnit);
 		
 		if (exists) {
-			throw new BusinessRuleException("Já existe uma Matéria com esse Código");
+			throw new BusinessRuleException("Já existe uma Matéria com esse Código nesse Curso");
 		}
 	}
 
@@ -46,12 +46,14 @@ public class CourseClassServiceImpl implements CourseClassService{
 	public CourseClass updateCourseClass(CourseClass courseClass) {
 		Objects.requireNonNull(courseClass.getId());
 		Objects.requireNonNull(courseClass.getCode());
+		
+		validateCodeAndCourseUnit(courseClass.getCode(), courseClass.getCourseUnit());
 		return repository.save(courseClass);
 	}
 
 	@Override
 	public List<CourseClass> search(CourseClass courseClassFiler) {
-		Example example = Example.of(courseClassFiler,
+		Example<CourseClass> example = Example.of(courseClassFiler,
 				ExampleMatcher.matching()
 					.withIgnoreCase()
 					.withStringMatcher(StringMatcher.CONTAINING));
