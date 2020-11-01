@@ -47,7 +47,6 @@ public class CourseClassServiceImpl implements CourseClassService{
 		Objects.requireNonNull(courseClass.getId());
 		Objects.requireNonNull(courseClass.getCode());
 		
-		validateCodeAndCourseUnit(courseClass.getCode(), courseClass.getCourseUnit());
 		return repository.save(courseClass);
 	}
 
