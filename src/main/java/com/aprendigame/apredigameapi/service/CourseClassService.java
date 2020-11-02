@@ -14,7 +14,7 @@ public interface CourseClassService {
 		
 	CourseClass updateCourseClass(CourseClass courseClass);
 	
-	List<CourseClass> search(CourseClass courseClassFiler);
+	List<CourseClass> search(CourseClass courseClassFilter);
 	
 	Optional<CourseClass> findById(Long id);
 	

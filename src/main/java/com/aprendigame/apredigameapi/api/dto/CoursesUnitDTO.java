@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CoursesUnitDTO {
 
+	private Long id;
 	private String name;
 	private String code;
 	private String teacherRegistration;

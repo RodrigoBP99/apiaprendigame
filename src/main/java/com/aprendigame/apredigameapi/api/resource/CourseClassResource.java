@@ -52,30 +52,43 @@ public class CourseClassResource {
 	public ResponseEntity findCourseClass(
 			@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "courseUnit", required = false)String courseUnit,
-			@RequestParam("teacher")Long teacher) {
+			@RequestParam(value = "teacher", required = false)Long teacher) {
 		
 		CourseClass courseClassFilter = new CourseClass();
 		courseClassFilter.setName(name);
 		
-		Optional<Teacher> teacherCourseClass = teacherService.findById(teacher);
-		if(!teacherCourseClass.isPresent()) {
-			return ResponseEntity.badRequest().body("Não foi possivel encontra nenhum professor com esse codigo");
-		} else {
-			courseClassFilter.setTeacher(teacherCourseClass.get());
+		if(teacher != null) {
+			Optional<Teacher> teacherCourseClass = teacherService.findById(teacher);
+			if(teacherCourseClass.isPresent()) {
+				courseClassFilter.setTeacher(teacherCourseClass.get());
+			}
 		}
 		
-		Optional<CoursesUnit> courseUnitCourseClass = courseUnitService.findByCode(courseUnit);
-		if(courseUnitCourseClass.isPresent()) {
-			courseClassFilter.setCourseUnit(courseUnitCourseClass.get());
+		if(courseUnit != null) {
+			Optional<CoursesUnit> courseUnitCourseClass = courseUnitService.findByCode(courseUnit);
+			if(courseUnitCourseClass.isPresent()) {
+				courseClassFilter.setCourseUnit(courseUnitCourseClass.get());
+			}
 		}
-		
 		List<CourseClass> courseClasses = service.search(courseClassFilter);
 		return ResponseEntity.ok(courseClasses);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@GetMapping("/find/{id}")
+	@GetMapping("/getCourseClass/{id}")
 	public ResponseEntity getCourseClass(@PathVariable("id") Long id) {
+		try {
+			Optional<CourseClass> courseClass = service.findById(id);
+			return new ResponseEntity(courseClass.get(), HttpStatus.OK);	
+		} catch (BusinessRuleException e) {
+			return new ResponseEntity(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@GetMapping("/find/{id}")
+	public ResponseEntity findToUpdate(@PathVariable("id") Long id) {
 		try {
 			Optional<CourseClass> courseClass = service.findById(id);
 			CourseClassDTO courseClassDTO = convertDTO(courseClass.get());
@@ -94,11 +107,11 @@ public class CourseClassResource {
 		dto.setStudents(courseClass.getStudents());
 		
 		if(courseClass.getCourseUnit() != null) {
-		dto.setCourseUnitCode(courseClass.getCourseUnit().getCode());
+			dto.setCourseUnitCode(courseClass.getCourseUnit().getCode());
 		}
 		
 		if(courseClass.getTeacher() != null) {
-		dto.setTeacherId(courseClass.getTeacher().getId());
+			dto.setTeacherId(courseClass.getTeacher().getId());
 		}
 		
 		return dto;

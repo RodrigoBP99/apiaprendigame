@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
@@ -16,4 +17,5 @@ public interface CoursesUnitService {
 	
 	CoursesUnit updateCourseUnit(CoursesUnit courseUnit);
 
+	List<CoursesUnit> search(CoursesUnit courseUnitFilter);
 }

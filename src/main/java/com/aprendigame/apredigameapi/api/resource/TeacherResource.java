@@ -1,6 +1,7 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aprendigame.apredigameapi.api.dto.TeacherDTO;
 import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
+import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.model.entity.Teacher;
+import com.aprendigame.apredigameapi.service.CoursesUnitService;
 import com.aprendigame.apredigameapi.service.TeacherService;
 
 @RestController
@@ -22,9 +25,11 @@ import com.aprendigame.apredigameapi.service.TeacherService;
 public class TeacherResource {
 
 	private TeacherService service;
+	private CoursesUnitService serviceCourseUnit;
 	
-	public TeacherResource(TeacherService service) {
+	public TeacherResource(TeacherService service, CoursesUnitService serviceCourseUnit) {
 		this.service = service;
+		this.serviceCourseUnit = serviceCourseUnit;
 	}
 	
 	@PostMapping("/login")
@@ -74,6 +79,12 @@ public class TeacherResource {
 		teacher.setPassword(dto.getPassword());
 		teacher.setPhoto(dto.getPhoto());
 		
+		Optional<CoursesUnit> courseUnit = serviceCourseUnit.findByCode(dto.getCourseUnitCode());
+		
+		if(courseUnit.isPresent()) {
+			teacher.setCourseUnit(courseUnit.get());
+		}
+	
 		return teacher;
 	}
 }

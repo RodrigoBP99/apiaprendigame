@@ -1,8 +1,12 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.stereotype.Service;
 
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
@@ -22,7 +26,17 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 	
 	@Override
 	public CoursesUnit saveCoursesUnit(CoursesUnit coursesUnit) {
+		
+		if (coursesUnit.getCode() == null) {
+			throw new BusinessRuleException("O Código do curso é obrigatorio!");
+		}
+		
+		if (coursesUnit.getName() == null) {
+			throw new BusinessRuleException("O nome do curso é obrigatorio!");
+		}
+		
 		validateCode(coursesUnit.getCode());
+		
 		return repository.save(coursesUnit);
 	}
 
@@ -43,12 +57,21 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 	@Override
 	public CoursesUnit updateCourseUnit(CoursesUnit courseUnit) {
 		Objects.requireNonNull(courseUnit.getId());
-		Objects.requireNonNull(courseUnit.getCode());
 		return repository.save(courseUnit);
 	}
 
 	@Override
 	public Optional<CoursesUnit> findByCode(String code) {
 		return repository.findByCode(code);
+	}
+
+	@Override
+	public List<CoursesUnit> search(CoursesUnit courseUnitFilter) {
+		Example<CoursesUnit> example = Example.of(courseUnitFilter,
+				ExampleMatcher.matching()
+					.withIgnoreCase()
+					.withStringMatcher(StringMatcher.CONTAINING));
+		
+		return repository.findAll(example);
 	}
 }
