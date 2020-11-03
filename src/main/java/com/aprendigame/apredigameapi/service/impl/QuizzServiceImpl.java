@@ -1,8 +1,12 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +67,15 @@ public class QuizzServiceImpl implements QuizzService{
 		Objects.requireNonNull(quizz.getId());
 		Objects.requireNonNull(quizz.getCode());
 		return quizz;
+	}
+
+	@Override
+	public List<Quizz> search(Quizz quizzFilter) {
+		Example<Quizz> example = Example.of(quizzFilter,
+				ExampleMatcher.matching()
+				.withIgnoreCase()
+				.withStringMatcher(StringMatcher.CONTAINING));
+		return repository.findAll(example);
 	}
 		
 }

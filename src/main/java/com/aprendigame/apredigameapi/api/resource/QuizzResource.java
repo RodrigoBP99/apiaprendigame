@@ -1,9 +1,12 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +32,28 @@ public class QuizzResource {
 	public QuizzResource(QuizzService service, CourseClassService courseClassService) {
 		this.service = service;
 		this.courseClassService = courseClassService;
+	}
+	
+	@GetMapping
+	public ResponseEntity findQuizz(
+			@PathVariable(value = "code", required = false) String code,
+			@PathVariable(value = "tittle", required = false) String tittle,
+			@PathVariable(value = "courseClassId", required = false) Long courseClassId) {
+		Quizz quizzFilter = new Quizz();
+		
+		quizzFilter.setCode(code);
+		quizzFilter.setTitle(tittle);
+		
+		if(courseClassId != null) {
+			Optional<CourseClass> courseClass = courseClassService.findById(courseClassId);
+			if(courseClass.isPresent()) {
+				quizzFilter.setCourseClass(courseClass.get());
+			}
+		}
+		
+		List<Quizz> quizzList = service.search(quizzFilter);
+		
+		return ResponseEntity.ok(quizzList);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

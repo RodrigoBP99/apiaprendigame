@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.aprendigame.apredigameapi.model.entity.CourseClass;
@@ -16,4 +17,6 @@ public interface QuizzService {
 	Optional<Quizz> findById(Long id);
 	
 	Quizz updateQuizz(Quizz quizz);
+	
+	List<Quizz> search (Quizz quizzFilter);
 }
