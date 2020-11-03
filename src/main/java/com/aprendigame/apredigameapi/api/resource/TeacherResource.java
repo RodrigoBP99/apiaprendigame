@@ -1,6 +1,7 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -82,7 +83,9 @@ public class TeacherResource {
 		Optional<CoursesUnit> courseUnit = serviceCourseUnit.findByCode(dto.getCourseUnitCode());
 		
 		if(courseUnit.isPresent()) {
-			teacher.setCourseUnit(courseUnit.get());
+			List<CoursesUnit> coursesUnit = teacher.getCourseUnit();
+			coursesUnit.add(courseUnit.get());
+			teacher.setCourseUnit(coursesUnit);
 		}
 	
 		return teacher;

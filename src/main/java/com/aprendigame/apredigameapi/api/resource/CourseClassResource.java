@@ -57,6 +57,13 @@ public class CourseClassResource {
 		CourseClass courseClassFilter = new CourseClass();
 		courseClassFilter.setName(name);
 		
+		if(courseUnit != null) {
+			Optional<CoursesUnit> courseUnitCourseClass = courseUnitService.findByCode(courseUnit);
+			if(courseUnitCourseClass.isPresent()) {
+				courseClassFilter.setCourseUnit(courseUnitCourseClass.get());
+			}
+		}
+		
 		if(teacher != null) {
 			Optional<Teacher> teacherCourseClass = teacherService.findById(teacher);
 			if(teacherCourseClass.isPresent()) {
@@ -64,13 +71,8 @@ public class CourseClassResource {
 			}
 		}
 		
-		if(courseUnit != null) {
-			Optional<CoursesUnit> courseUnitCourseClass = courseUnitService.findByCode(courseUnit);
-			if(courseUnitCourseClass.isPresent()) {
-				courseClassFilter.setCourseUnit(courseUnitCourseClass.get());
-			}
-		}
 		List<CourseClass> courseClasses = service.search(courseClassFilter);
+		
 		return ResponseEntity.ok(courseClasses);
 	}
 	

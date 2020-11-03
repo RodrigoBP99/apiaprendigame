@@ -1,7 +1,6 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,17 +49,18 @@ public class CoursesUnitResource {
 		
 		List<CoursesUnit> coursesUnits = service.search(courseUnitFilter);
 		
-		
-		Optional<Teacher> teacher = serviceTeacher.findById(teacherId);
-		List<Teacher> teachers = null;
-		if (teacher.isPresent()) {
-			for (CoursesUnit courseUnit : coursesUnits) {
-				teachers = courseUnit.getTeachers();
-				if(teachers.isEmpty() || !teachers.contains(teacher.get())) {
-					coursesUnits.remove(courseUnit);
-				}
-				if (coursesUnits.isEmpty()) {
-					return ResponseEntity.ok(coursesUnits);
+		if(teacherId != null) {
+			Optional<Teacher> teacher = serviceTeacher.findById(teacherId);
+			List<Teacher> teachers = null;
+			if (teacher.isPresent()) {
+				for (CoursesUnit courseUnit : coursesUnits) {
+					teachers = courseUnit.getTeachers();
+					if(teachers.isEmpty() || !teachers.contains(teacher.get())) {
+						coursesUnits.remove(courseUnit);
+					}
+					if (coursesUnits.isEmpty()) {
+						return ResponseEntity.ok(coursesUnits);
+					}
 				}
 			}
 		}
@@ -70,13 +70,13 @@ public class CoursesUnitResource {
 	}
 	
 	@GetMapping("/find/{id}")
-	public ResponseEntity getCourseUnit(@PathVariable("id") Long id) {
+	public ResponseEntity<CoursesUnitDTO> getCourseUnit(@PathVariable("id") Long id) {
 		try {
 			Optional<CoursesUnit> courseUnit = service.findById(id);
 			CoursesUnitDTO coursesUnitDTO = convertDTO(courseUnit.get());
-			return new ResponseEntity(coursesUnitDTO, HttpStatus.OK);
+			return new ResponseEntity<CoursesUnitDTO>(coursesUnitDTO, HttpStatus.OK);
 		} catch (BusinessRuleException e) {
-			return new ResponseEntity(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<CoursesUnitDTO>(HttpStatus.NOT_FOUND);
 		}
 	}
 	
