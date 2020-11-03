@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +37,7 @@ public class Answer implements Serializable{
 	private AnswerType answerType;
 	@ManyToOne
 	@JoinColumn(name = "question_id")
+	@JsonIgnoreProperties({"answers"})
 	private Question question;
 	
 

@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,9 +37,11 @@ public class Quizz implements Serializable{
 	private String title;
 	@ManyToOne
 	@JoinColumn(name = "courseClass_id")
+	@JsonIgnoreProperties({"students", "quizzes", "teacher"})
 	private CourseClass courseClass;
 	private String amountOfQuestions;
 	@OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"answers", "quizz"})
 	private List<Question> questions;
 	private Double points;
 

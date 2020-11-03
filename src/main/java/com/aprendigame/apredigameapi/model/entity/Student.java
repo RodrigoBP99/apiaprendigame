@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +40,7 @@ public class Student implements Serializable{
 	private String password;
 	@ManyToOne
 	@JoinColumn(name = "courseUnit_id")
+	@JsonIgnoreProperties({"teachers", "courseClasses", "students"})
 	private CoursesUnit courseUnit;
 	private String photo;
 	private String schoolName;
@@ -46,6 +49,7 @@ public class Student implements Serializable{
 	private List<Presenc> presences;
 	@ManyToMany
 	@JoinColumn(name = "courseClass_id")
+	@JsonIgnoreProperties({"students", "quizzes"})
 	private List<CourseClass> listClass;
 	private double points;
 	private double requiredPoints;

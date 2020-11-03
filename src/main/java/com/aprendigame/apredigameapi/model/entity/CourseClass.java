@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,14 +37,18 @@ public class CourseClass implements Serializable{
 	private String name;
 	private String code;
 	@ManyToMany
+	@JsonIgnoreProperties({"presences", "listClass"})
 	private List<Student> students;
 	@ManyToOne
 	@JoinColumn(name = "courseUnit_id")
+	@JsonIgnoreProperties({"teachers", "courseClasses", "students"})
 	private CoursesUnit courseUnit;
 	@ManyToOne
 	@JoinColumn(name = "teacher_id")
+	@JsonIgnoreProperties({"courseUnit", "courseClasses", "password"})
 	private Teacher teacher;
 	@OneToMany(mappedBy = "courseClass", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"questions", "courseClass"})
 	private List<Quizz> quizzes;
 
 }
