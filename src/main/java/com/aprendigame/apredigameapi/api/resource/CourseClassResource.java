@@ -38,13 +38,16 @@ public class CourseClassResource {
 	private TeacherService teacherService;
 
 	private StudentService studentService;
+	
+	private StudentResource studentResource;
 
 	public CourseClassResource(CourseClassService service, CoursesUnitService courseUnitService,
-			TeacherService teacherService, StudentService studentService) {
+			TeacherService teacherService, StudentService studentService, StudentResource studentResource) {
 		this.service = service;
 		this.courseUnitService = courseUnitService;
 		this.teacherService = teacherService;
 		this.studentService = studentService;
+		this.studentResource = studentResource;
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -187,12 +190,26 @@ public class CourseClassResource {
 						.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para essa matricula"));
 
 				List<Student> students = courseClass.getStudents();
+				
+				//Testa se estudante informado já está na turma
+				if(students.contains(student)) {
+					return ResponseEntity.badRequest().body("Estudante já cadastrado na Turma");
+				}
+				
 				students.add(student);
-
 				courseClass.setStudents(students);
-
-				service.updateCourseClass(courseClass);
-				return ResponseEntity.ok(courseClass);
+				
+				//inclui turma na lista de turmas do estudante
+				ResponseEntity response = studentResource.includeStudentInCourseClass(student.getId(), courseClass);
+				
+				//testa se foi possivel incluir turma no estudante
+				if (response.equals(ResponseEntity.ok(student))) {
+					service.updateCourseClass(courseClass);
+					return ResponseEntity.ok(courseClass);
+				} else {
+					return ResponseEntity.badRequest().body(response.getBody());
+				}
+				
 			} catch (BusinessRuleException e) {
 				return ResponseEntity.badRequest().body(e.getMessage());
 			}
@@ -209,9 +226,66 @@ public class CourseClassResource {
 						.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para essa matricula"));
 
 				List<Student> students = courseClass.getStudents();
+				
+				//testa se estudante está na lista da turma
+				if (!students.contains(student)) {
+					return ResponseEntity.badRequest().body("Estudante não está cadastrado nessa Turma");
+				}
+				
+				
 				students.remove(student);
-
 				courseClass.setStudents(students);
+				
+				ResponseEntity response = studentResource.removeStudentInCourseClass(student.getId(), courseClass);
+				if(response.equals(ResponseEntity.ok(student))) {
+					service.updateCourseClass(courseClass);
+					return ResponseEntity.ok(courseClass);
+				} else {
+					return ResponseEntity.badRequest().body(response.getBody());
+				}
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Matéria não encontrado na nossa base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@PutMapping("/{id}/remove_teacher")
+	public ResponseEntity removeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+		return service.findById(id).map(entity -> {
+			try {
+				CourseClass courseClass = entity;
+				
+				Teacher teacher = teacherService.findByRegistration(dto.getTeacherRegistration())
+						.orElseThrow(() -> new BusinessRuleException("Professor não encontrado para a matricula informada"));
+
+				if(courseClass.getTeacher().equals(teacher)) {
+					courseClass.setTeacher(null);
+				} else {
+					throw new BusinessRuleException("O professor informado não é o professor da Turma");
+				}
+
+				service.updateCourseClass(courseClass);
+				
+				
+				return ResponseEntity.ok(courseClass);
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Matéria não encontrado na nossa base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@PutMapping("/{id}/include_teacher")
+	public ResponseEntity includeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+		return service.findById(id).map(entity -> {
+			try {
+				CourseClass courseClass = entity;
+				
+				Teacher teacher = teacherService.findByRegistration(dto.getTeacherRegistration())
+						.orElseThrow(() -> new BusinessRuleException("Professor não encontrado para a matricula informada"));
+
+				courseClass.setTeacher(teacher);
 
 				service.updateCourseClass(courseClass);
 				return ResponseEntity.ok(courseClass);
@@ -220,7 +294,6 @@ public class CourseClassResource {
 			}
 		}).orElseGet(() -> new ResponseEntity("Matéria não encontrado na nossa base de dados", HttpStatus.BAD_REQUEST));
 	}
-	
 
 	private CourseClass convert(CourseClassDTO dto) {
 		CourseClass courseClass = new CourseClass();

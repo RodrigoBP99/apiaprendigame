@@ -1,6 +1,7 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aprendigame.apredigameapi.api.dto.StudentDTO;
 import com.aprendigame.apredigameapi.exception.AutenticationError;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
+import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.service.CoursesUnitService;
@@ -62,6 +64,15 @@ public class StudentResource {
 				Student student = convert(dto);
 				student.setId(entity.getId());
 				student.setRegistration(entity.getRegistration());
+				student.setActualLevel(entity.getActualLevel());
+				student.setNextLevel(entity.getActualLevel());
+				student.setPoints(entity.getPoints());
+				student.setRequiredPoints(entity.getRequiredPoints());
+				student.setPassword(entity.getPassword());
+				student.setListClass(entity.getListClass());
+				student.setCourseUnit(entity.getCourseUnit());
+				
+				
 				service.updateStudent(student);
 				return ResponseEntity.ok(student);
 			} catch (BusinessRuleException e) {
@@ -69,6 +80,58 @@ public class StudentResource {
 			}
 		}).orElseGet(() -> 
 				new ResponseEntity("Estudante não encontrado na nossa base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ResponseEntity includeStudentInCourseClass(@PathVariable("id") Long id, @RequestBody CourseClass courseClass) {
+		return service.findById(id).map(entity -> {
+			try {
+				Student student = entity;
+				
+				List<CourseClass> courseClasses = student.getListClass();
+				
+				
+				if(!courseClasses.contains(courseClass)) {
+					courseClasses.add(courseClass);
+					
+					student.setListClass(courseClasses);
+					service.updateStudent(student);
+					return ResponseEntity.ok(student);
+				} else {
+					return ResponseEntity.badRequest().body("Estudante já cadastrado na turma");
+				}
+				
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Studante não encontrado", HttpStatus.BAD_REQUEST));
+	}
+	
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ResponseEntity removeStudentInCourseClass(@PathVariable("id") Long id, @RequestBody CourseClass courseClass) {
+		return service.findById(id).map(entity -> {
+			try {
+				Student student = entity;
+				
+				List<CourseClass> courseClasses = student.getListClass();
+				
+				
+				if(courseClasses.contains(courseClass)) {
+					courseClasses.remove(courseClass);
+					
+					student.setListClass(courseClasses);
+					service.updateStudent(student);
+					return ResponseEntity.ok(student);
+				} else {
+					return ResponseEntity.badRequest().body("Estudante não está cadastrado na turma");
+				}
+				
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Studante não encontrado", HttpStatus.BAD_REQUEST));
 	}
 	
 	private Student convert(StudentDTO dto) {

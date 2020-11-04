@@ -74,4 +74,9 @@ public class StudentServiceImpl implements StudentService{
 		return repository.findByRegistration(registration);
 	}
 
+	@Override
+	public Optional<Student> findById(Long id) {
+		return repository.findById(id);
+	}
+
 }

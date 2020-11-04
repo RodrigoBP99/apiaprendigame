@@ -15,4 +15,6 @@ public interface StudentService {
 	void validateRegistration(String registration);
 	
 	Optional<Student> findByRegistration(String registration);
+	
+	Optional<Student> findById(Long id);
 }
