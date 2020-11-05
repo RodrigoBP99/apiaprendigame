@@ -2,6 +2,8 @@ package com.aprendigame.apredigameapi.api.resource;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,17 @@ public class AnswerResource {
 	public AnswerResource(AnswerService service, QuestionService serviceQuestion) {
 		this.service = service;
 		this.serviceQuestion = serviceQuestion;
+	}
+	
+	@GetMapping("/get/{id}")
+	public ResponseEntity<Answer> getAnswier(@PathVariable("id") Long id) {
+		try {
+			Answer answer = service.findById(id)
+					.orElseThrow(() -> new BusinessRuleException("Questão não encontrada"));
+			return new ResponseEntity<Answer>(answer, HttpStatus.OK);
+		} catch (BusinessRuleException e) {
+			return new ResponseEntity<Answer>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@PostMapping("/save")
