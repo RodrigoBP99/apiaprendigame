@@ -306,9 +306,11 @@ public class CourseClassResource {
 
 		courseClass.setCourseUnit(courseUnit);
 
-		Optional<Teacher> teacher = teacherService.findById(dto.getTeacherId());
-		if (teacher.isPresent()) {
-			courseClass.setTeacher(teacher.get());
+		if(dto.getTeacherId() != null) {
+			Optional<Teacher> teacher = teacherService.findById(dto.getTeacherId());
+			if (teacher.isPresent()) {
+				courseClass.setTeacher(teacher.get());
+			}
 		}
 		return courseClass;
 	}

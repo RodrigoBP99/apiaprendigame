@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,10 +45,26 @@ public class StudentResource {
 		
 	}
 	
+	@GetMapping("/getStudent/{id}")
+	public ResponseEntity<Student> getStudent(@PathVariable("id") Long id) {
+		try {
+			Student student = service.findById(id)
+					.orElseThrow( () -> new BusinessRuleException("Estudante não encontrado!") );
+			return new ResponseEntity<Student>(student, HttpStatus.OK);
+		} catch (BusinessRuleException e) {
+			return new ResponseEntity<Student>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<Serializable> save( @RequestBody StudentDTO dto) {		
 		try {
 			Student savedStudent = convert(dto);
+			CoursesUnit courseUnit = courseUnitService.findByCode(dto.getCourseUnitCode())
+					.orElseThrow(() -> new BusinessRuleException("Curso não encontrado com esse Código"));
+		
+			savedStudent.setCourseUnit(courseUnit);
+			
 			savedStudent = service.saveStudent(savedStudent);
 			
 			return new ResponseEntity<Serializable>(savedStudent, HttpStatus.CREATED);
@@ -57,9 +74,9 @@ public class StudentResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/update/{registration}")
-	public ResponseEntity updateStudent(@PathVariable("registration") String registration, @RequestBody StudentDTO dto) {
-		return service.findByRegistration(registration).map(entity -> {
+	@PutMapping("/update/{id}")
+	public ResponseEntity updateStudent(@PathVariable("id") Long id, @RequestBody StudentDTO dto) {
+		return service.findById(id).map(entity -> {
 			try {
 				Student student = convert(dto);
 				student.setId(entity.getId());
@@ -146,11 +163,6 @@ public class StudentResource {
 		student.setNextLevel(2);
 		student.setPoints(0);
 		student.setRequiredPoints(student.getActualLevel()*25);
-		
-		CoursesUnit courseUnit = courseUnitService.findByCode(dto.getCourseUnitCode())
-				.orElseThrow(() -> new BusinessRuleException("Curso não encontrado com esse Código"));
-	
-		student.setCourseUnit(courseUnit);
 		
 		return student;
 	}

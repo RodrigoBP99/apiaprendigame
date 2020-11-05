@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StudentDTO {
 	
+	private Long id;
 	private String name;
 	private String registration;
 	private String schoolName;

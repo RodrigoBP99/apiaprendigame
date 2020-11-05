@@ -41,7 +41,7 @@ public class Quizz implements Serializable{
 	private CourseClass courseClass;
 	private String amountOfQuestions;
 	@OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL)
-	@JsonIgnoreProperties({"answers", "quizz"})
+	@JsonIgnoreProperties({"quizz"})
 	private List<Question> questions;
 	private Double points;
 
