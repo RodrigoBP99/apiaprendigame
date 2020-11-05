@@ -1,5 +1,7 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.aprendigame.apredigameapi.model.entity.Answer;
@@ -19,6 +21,11 @@ public class AnswerServiceImpl implements AnswerService{
 	@Override
 	public Answer saveAnswer(Answer answer) {
 		return repository.save(answer);
+	}
+
+	@Override
+	public Optional<Answer> findById(Long id) {
+		return repository.findById(id);
 	}
 
 }
