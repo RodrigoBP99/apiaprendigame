@@ -103,6 +103,7 @@ public class QuizzResource {
 		quizz.setCode(dto.getCode());
 		quizz.setTitle(dto.getTitle());
 		quizz.setQuestions(dto.getQuestions());
+		quizz.setValue(dto.getValue());
 		
 		String amountOfQuestions = String.valueOf(quizz.getQuestions().size());
 		quizz.setAmountOfQuestions(amountOfQuestions);
