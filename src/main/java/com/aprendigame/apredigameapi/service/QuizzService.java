@@ -19,4 +19,6 @@ public interface QuizzService {
 	Quizz updateQuizz(Quizz quizz);
 	
 	List<Quizz> search (Quizz quizzFilter);
+	
+	void deleteQuizz(Quizz quizz);
 }

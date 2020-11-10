@@ -77,5 +77,11 @@ public class QuizzServiceImpl implements QuizzService{
 				.withStringMatcher(StringMatcher.CONTAINING));
 		return repository.findAll(example);
 	}
+
+	@Override
+	public void deleteQuizz(Quizz quizz) {
+		Objects.requireNonNull(quizz.getId());
+		repository.delete(quizz);
+	}
 		
 }
