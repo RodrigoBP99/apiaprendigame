@@ -44,5 +44,6 @@ public class Quizz implements Serializable{
 	@JsonIgnoreProperties({"quizz"})
 	private List<Question> questions;
 	private Double points;
+	private Double value;
 
 }

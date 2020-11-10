@@ -55,5 +55,8 @@ public class Student implements Serializable{
 	private double requiredPoints;
 	private int actualLevel;
 	private int nextLevel;
+	@ManyToMany
+	@JsonIgnoreProperties({"questions"})
+	private List<Quizz> answeredQuizz;
 	
 }
