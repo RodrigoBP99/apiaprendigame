@@ -72,6 +72,28 @@ public class TeacherResource {
 		}
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ResponseEntity includeTeacherInCourseUnit(@PathVariable("id") Long id, @RequestBody CoursesUnit courseUnit) {
+		return service.findById(id).map(entity -> {
+			try {
+				Teacher teacher = entity;
+				
+				List<CoursesUnit> courseUnitList = teacher.getCourseUnit();
+				
+				if(!courseUnitList.contains(courseUnit)) {
+					courseUnitList.add(courseUnit);
+					
+					service.updateTeacher(teacher);
+					return ResponseEntity.ok(teacher);
+				} else {
+					return ResponseEntity.badRequest().body("O professor já está cadastrado nesse Curso");
+				}
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Professor não encontrado", HttpStatus.BAD_REQUEST));
+	}
+	
 
 	private Teacher convert(TeacherDTO dto) {
 		Teacher teacher = new Teacher();
