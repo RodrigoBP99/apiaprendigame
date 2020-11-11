@@ -116,6 +116,79 @@ public class CoursesUnitResource {
 		}).orElseGet(() -> new ResponseEntity("Não foi possivel encontra o curso", HttpStatus.BAD_REQUEST));
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked"})
+	@PutMapping("/{id}/includeteacher")
+	public ResponseEntity includeTeacher(@PathVariable("id") Long id, @RequestBody CoursesUnitDTO dto) {
+		return service.findById(id).map(entity -> {
+			try {
+				CoursesUnit coursesUnit = entity;
+				
+				Optional<Teacher> teacher = serviceTeacher.findByRegistration(dto.getTeacherRegistration());
+				if (!teacher.isPresent()) {
+					return ResponseEntity.badRequest().body("Professor não encontrado para a matricula informada");
+				} 
+				
+				List<Teacher> teachers = coursesUnit.getTeachers();
+				
+				if (teachers.contains(teacher.get())) {
+					return ResponseEntity.badRequest().body("Professor já está no Curso");
+				}
+				
+				teachers.add(teacher.get());
+				coursesUnit.setTeachers(teachers);
+				
+				ResponseEntity response = teacherResource.includeTeacherInCourseUnit(teacher.get().getId(), coursesUnit);
+				
+				if (response.equals(ResponseEntity.ok(teacher.get()))) {
+					service.updateCourseUnit(coursesUnit);
+					return ResponseEntity.ok(coursesUnit);
+				} else {
+					return ResponseEntity.badRequest().body(response.getBody());
+				}
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Curso não encontrado na base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked"})
+	@PutMapping("/{id}/removeteacher")
+	public ResponseEntity removeTeacher(@PathVariable("id") Long id, @RequestBody CoursesUnitDTO dto) {
+		return service.findById(id).map(entity -> {
+			try {
+				CoursesUnit coursesUnit = entity;
+				
+				Optional<Teacher> teacher = serviceTeacher.findByRegistration(dto.getTeacherRegistration());
+				
+				if (!teacher.isPresent()) {
+					return ResponseEntity.badRequest().body("Professor não encontrado para a matricula informada");
+				} 
+				
+				List<Teacher> teachers = coursesUnit.getTeachers();
+				
+				if (teachers.contains(teacher.get())) {
+					return ResponseEntity.badRequest().body("Professor já está no Curso");
+				}
+				
+				teachers.remove(teacher.get());
+				coursesUnit.setTeachers(teachers);
+				
+				ResponseEntity response = teacherResource.removeTeacherFromCourseUnit(teacher.get().getId(), coursesUnit);
+				
+				if (response.equals(ResponseEntity.ok(teacher.get()))) {
+					service.updateCourseUnit(coursesUnit);
+					return ResponseEntity.ok(coursesUnit);
+				} else {
+					return ResponseEntity.badRequest().body(response.getBody());
+				}
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Curso não encontrado na base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PostMapping("/save")
 	public ResponseEntity saveCourseClass(@RequestBody CoursesUnitDTO dto) {		

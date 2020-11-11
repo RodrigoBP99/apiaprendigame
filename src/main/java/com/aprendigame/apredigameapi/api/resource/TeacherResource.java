@@ -94,6 +94,31 @@ public class TeacherResource {
 		}).orElseGet(() -> new ResponseEntity("Professor não encontrado", HttpStatus.BAD_REQUEST));
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked"})
+	public ResponseEntity removeTeacherFromCourseUnit(@PathVariable("id") Long id, @RequestBody CoursesUnit coursesUnit) {
+		return service.findById(id).map(entity -> {
+			try {
+				Teacher teacher = entity;
+				
+				List<CoursesUnit> coursesUnits = teacher.getCourseUnit();
+				
+				if (coursesUnits.contains(coursesUnit)) {
+					coursesUnits.remove(coursesUnit);
+					
+					teacher.setCourseUnit(coursesUnits);
+					service.updateTeacher(teacher);
+					return ResponseEntity.ok(teacher);
+				} else {
+					return ResponseEntity.badRequest().body("O professor parece já não fazer parte desse curso");
+				}
+			
+				
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Professor não encontrado", HttpStatus.BAD_REQUEST));
+	}
+	
 
 	private Teacher convert(TeacherDTO dto) {
 		Teacher teacher = new Teacher();
