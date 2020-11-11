@@ -1,6 +1,6 @@
 package com.aprendigame.apredigameapi.api.resource;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,13 +28,16 @@ public class CoursesUnitResource {
 
 	private CoursesUnitService service;
 	private TeacherService serviceTeacher;
+	private TeacherResource teacherResource;
 	
-	public CoursesUnitResource(CoursesUnitService service, TeacherService serviceTeacher) {
+	public CoursesUnitResource(CoursesUnitService service, TeacherService serviceTeacher, TeacherResource teacherResource) {
 		this.service = service;
 		this.serviceTeacher = serviceTeacher;
+		this.teacherResource = teacherResource;
 	}
 	
 
+	@SuppressWarnings("unused")
 	@GetMapping
 	public ResponseEntity<Object> findCourseUnit(
 			@RequestParam(value = "name", required = false) String name,
@@ -48,21 +51,19 @@ public class CoursesUnitResource {
 		
 		
 		List<CoursesUnit> coursesUnits = service.search(courseUnitFilter);
+		List<CoursesUnit> coursesUnits2 = new ArrayList<CoursesUnit>();
 		
 		if(teacherId != null) {
-			Optional<Teacher> teacher = serviceTeacher.findById(teacherId);
-			List<Teacher> teachers = null;
-			if (teacher.isPresent()) {
-				for (CoursesUnit courseUnit : coursesUnits) {
-					teachers = courseUnit.getTeachers();
-					if(teachers.isEmpty() || !teachers.contains(teacher.get())) {
-						coursesUnits.remove(courseUnit);
-					}
-					if (coursesUnits.isEmpty()) {
-						return ResponseEntity.ok(coursesUnits);
+			Teacher teacher = serviceTeacher.findById(teacherId)
+					.orElseThrow(() -> new BusinessRuleException("Não foi econtrado o professor no nosso banco de dados"));
+			for (CoursesUnit courseUnit : coursesUnits) {
+				for(Teacher teacher1 : courseUnit.getTeachers()) {
+					if(teacher1.getId().equals(teacher.getId())) {
+						coursesUnits2.add(courseUnit);
 					}
 				}
 			}
+			return ResponseEntity.ok(coursesUnits2);
 		}
 		
 		
@@ -115,13 +116,22 @@ public class CoursesUnitResource {
 		}).orElseGet(() -> new ResponseEntity("Não foi possivel encontra o curso", HttpStatus.BAD_REQUEST));
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PostMapping("/save")
-	public ResponseEntity<Serializable> saveCourseClass(@RequestBody CoursesUnitDTO dto) {		
+	public ResponseEntity saveCourseClass(@RequestBody CoursesUnitDTO dto) {		
 		try {
 			CoursesUnit savedCourseUnit = convert(dto);
-			savedCourseUnit = service.saveCoursesUnit(savedCourseUnit);
+
+			Optional<Teacher> teacher = serviceTeacher.findById(dto.getTeacherId());
+			if(teacher.isPresent()) {
+				List<Teacher> teachers = new ArrayList<>();
+				teachers.add(teacher.get());
+				savedCourseUnit.setTeachers(teachers);
+			}
 			
-			return new ResponseEntity<Serializable>(savedCourseUnit, HttpStatus.CREATED);
+			savedCourseUnit = service.saveCoursesUnit(savedCourseUnit);
+			teacherResource.includeTeacherInCourseUnit(teacher.get().getId(), savedCourseUnit);
+			return new ResponseEntity(savedCourseUnit, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -132,6 +142,7 @@ public class CoursesUnitResource {
 		CoursesUnit courseUnit = new CoursesUnit();
 		courseUnit.setCode(dto.getCode());
 		courseUnit.setName(dto.getName());
+		
 		
 		return courseUnit;
 	}

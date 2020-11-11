@@ -64,6 +64,8 @@ public class CourseClassResource {
 			Optional<CoursesUnit> courseUnitCourseClass = courseUnitService.findByCode(courseUnit);
 			if(courseUnitCourseClass.isPresent()) {
 				courseClassFilter.setCourseUnit(courseUnitCourseClass.get());
+			} else {
+				return ResponseEntity.badRequest().body("Curso não encontrado para o Código informado!");
 			}
 		}
 		
@@ -71,6 +73,8 @@ public class CourseClassResource {
 			Optional<Teacher> teacherCourseClass = teacherService.findById(teacher);
 			if(teacherCourseClass.isPresent()) {
 				courseClassFilter.setTeacher(teacherCourseClass.get());
+			} else {
+				return ResponseEntity.badRequest().body("Professor não encontrado, esse id não se incontra na nossa base de dados");
 			}
 		}
 		

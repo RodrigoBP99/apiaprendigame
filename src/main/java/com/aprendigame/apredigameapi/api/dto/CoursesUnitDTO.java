@@ -15,6 +15,7 @@ public class CoursesUnitDTO {
 	private String name;
 	private String code;
 	private String teacherRegistration;
+	private Long teacherId;
 	private String courseClassCode;
 	private String studentRegistration;
 }
