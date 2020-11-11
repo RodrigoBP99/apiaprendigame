@@ -240,7 +240,7 @@ public class CourseClassResource {
 				students.remove(student);
 				courseClass.setStudents(students);
 				
-				ResponseEntity response = studentResource.removeStudentInCourseClass(student.getId(), courseClass);
+				ResponseEntity response = studentResource.removeStudentFromCourseClass(student.getId(), courseClass);
 				if(response.equals(ResponseEntity.ok(student))) {
 					service.updateCourseClass(courseClass);
 					return ResponseEntity.ok(courseClass);

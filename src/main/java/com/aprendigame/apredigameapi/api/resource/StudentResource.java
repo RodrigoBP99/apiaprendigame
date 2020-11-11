@@ -128,7 +128,7 @@ public class StudentResource {
 	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ResponseEntity removeStudentInCourseClass(@PathVariable("id") Long id, @RequestBody CourseClass courseClass) {
+	public ResponseEntity removeStudentFromCourseClass(@PathVariable("id") Long id, @RequestBody CourseClass courseClass) {
 		return service.findById(id).map(entity -> {
 			try {
 				Student student = entity;
@@ -149,12 +149,12 @@ public class StudentResource {
 			} catch (BusinessRuleException e) {
 				return ResponseEntity.badRequest().body(e.getMessage());
 			}
-		}).orElseGet(() -> new ResponseEntity("Studante não encontrado", HttpStatus.BAD_REQUEST));
+		}).orElseGet(() -> new ResponseEntity("Estudante não encontrado", HttpStatus.BAD_REQUEST));
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PutMapping("/{id}/updatePointsAndLevel")
-	public ResponseEntity updateStudent(@PathVariable("id") Long id, @RequestBody Quizz quizz) {
+	public ResponseEntity updateStudentPointsAndLevel(@PathVariable("id") Long id, @RequestBody Quizz quizz) {
 		return service.findById(id).map(entity -> {
 			try {
 				Student student = entity;
