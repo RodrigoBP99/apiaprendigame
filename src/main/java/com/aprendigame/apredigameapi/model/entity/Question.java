@@ -35,7 +35,7 @@ public class Question implements Serializable {
 	private Long id;
 	private String questionTittle;
 	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-	@JsonIgnoreProperties({"question"})
+	@JsonIgnoreProperties({"question", "id"})
 	private List<Answer> answers;
 	@ManyToOne
 	@JoinColumn(name = "quizz_id")

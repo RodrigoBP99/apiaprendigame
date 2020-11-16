@@ -46,11 +46,12 @@ public class Student implements Serializable{
 	private String schoolName;
 	private String birthday;
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"student"})
 	private List<Presenc> presences;
 	@ManyToMany
 	@JoinColumn(name = "courseClass_id")
 	@JsonIgnoreProperties({"students", "quizzes"})
-	private List<CourseClass> listClass;
+	private List<CourseClass> courseClasses;
 	private double points;
 	private double requiredPoints;
 	private int actualLevel;

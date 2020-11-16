@@ -37,7 +37,7 @@ public class CourseClass implements Serializable{
 	private String name;
 	private String code;
 	@ManyToMany
-	@JsonIgnoreProperties({"presences", "listClass"})
+	@JsonIgnoreProperties({"presences", "courseClasses"})
 	private List<Student> students;
 	@ManyToOne
 	@JoinColumn(name = "courseUnit_id")

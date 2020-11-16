@@ -41,7 +41,7 @@ public class CoursesUnit implements Serializable {
 	@JsonIgnoreProperties({"students", "courseUnit", "quizzes"})
 	private List<CourseClass> courseClasses;
 	@OneToMany(mappedBy = "courseUnit")
-	@JsonIgnoreProperties({"presences", "listClass", "courseUnit", "password"})
+	@JsonIgnoreProperties({"presences", "courseClasses", "courseUnit", "password"})
 	private List<Student> students;
 	
 }

@@ -31,13 +31,13 @@ public class Presenc implements Serializable {
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private String id;
 	private String code;
-	@JsonIgnoreProperties({"students", "quizzes"})
+	@JsonIgnoreProperties({"students", "quizzes", "teacher", "courseUnit"})
 	private CourseClass courseClass;
 	private String date;
 	private String hour;
 	@ManyToOne
 	@JoinColumn(name = "student_id")
-	@JsonIgnoreProperties({"password", "presences", "listClass"})
+	@JsonIgnoreProperties({"password", "presences", "courseClasses"})
 	private Student student;
 
 }
