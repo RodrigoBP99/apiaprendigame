@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.aprendigame.apredigameapi.model.entity.Student;
@@ -17,4 +18,6 @@ public interface StudentService {
 	Optional<Student> findByRegistration(String registration);
 	
 	Optional<Student> findById(Long id);
+	
+	List<Student> search(Student studentFilter);
 }

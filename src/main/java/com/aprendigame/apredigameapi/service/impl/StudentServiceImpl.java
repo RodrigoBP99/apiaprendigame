@@ -1,8 +1,12 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +81,15 @@ public class StudentServiceImpl implements StudentService{
 	@Override
 	public Optional<Student> findById(Long id) {
 		return repository.findById(id);
+	}
+
+	@Override
+	public List<Student> search(Student studentFilter) {
+		Example<Student> example = Example.of(studentFilter,
+				ExampleMatcher.matching()
+					.withIgnoreCase()
+					.withStringMatcher(StringMatcher.CONTAINING));
+		return repository.findAll(example);
 	}
 
 }

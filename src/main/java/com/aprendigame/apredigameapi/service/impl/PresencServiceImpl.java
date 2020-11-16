@@ -1,5 +1,10 @@
 package com.aprendigame.apredigameapi.service.impl;
 
+import java.util.List;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.stereotype.Service;
 
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
@@ -33,6 +38,15 @@ public class PresencServiceImpl implements PresencService {
 			throw new BusinessRuleException("Essa presença já foi registrada");
 		}
 		
+	}
+
+	@Override
+	public List<Presenc> search(Presenc presencFilter) {
+		Example<Presenc> example = Example.of(presencFilter,
+				ExampleMatcher.matching()
+					.withIgnoreCase()
+					.withStringMatcher(StringMatcher.CONTAINING));
+		return repository.findAll(example);
 	}
 
 }

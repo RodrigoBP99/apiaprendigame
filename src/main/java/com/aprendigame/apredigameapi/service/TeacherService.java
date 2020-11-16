@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.aprendigame.apredigameapi.model.entity.Teacher;
@@ -17,4 +18,6 @@ public interface TeacherService {
 	Optional<Teacher> findById(Long id);
 	
 	Teacher updateTeacher(Teacher teacher);
+	
+	List<Teacher> search(Teacher teacherFilter);
 }
