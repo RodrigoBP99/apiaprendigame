@@ -1,5 +1,6 @@
 package com.aprendigame.apredigameapi.api.resource;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,6 @@ public class CoursesUnitResource {
 	}
 	
 
-	@SuppressWarnings("unused")
 	@GetMapping
 	public ResponseEntity<Object> findCourseUnit(
 			@RequestParam(value = "name", required = false) String name,
@@ -51,7 +51,7 @@ public class CoursesUnitResource {
 		
 		
 		List<CoursesUnit> coursesUnits = service.search(courseUnitFilter);
-		List<CoursesUnit> coursesUnits2 = new ArrayList<CoursesUnit>();
+		List<CoursesUnit> coursesUnitsFiltred = new ArrayList<CoursesUnit>();
 		
 		if(teacherId != null) {
 			Teacher teacher = serviceTeacher.findById(teacherId)
@@ -59,11 +59,11 @@ public class CoursesUnitResource {
 			for (CoursesUnit courseUnit : coursesUnits) {
 				for(Teacher teacher1 : courseUnit.getTeachers()) {
 					if(teacher1.getId().equals(teacher.getId())) {
-						coursesUnits2.add(courseUnit);
+						coursesUnitsFiltred.add(courseUnit);
 					}
 				}
 			}
-			return ResponseEntity.ok(coursesUnits2);
+			return ResponseEntity.ok(coursesUnitsFiltred);
 		}
 		
 		
@@ -71,24 +71,13 @@ public class CoursesUnitResource {
 	}
 	
 	@GetMapping("/find/{id}")
-	public ResponseEntity<CoursesUnitDTO> getCourseUnit(@PathVariable("id") Long id) {
+	public ResponseEntity<Optional<CoursesUnit>> getCourseUnit(@PathVariable("id") Long id) {
 		try {
 			Optional<CoursesUnit> courseUnit = service.findById(id);
-			CoursesUnitDTO coursesUnitDTO = convertDTO(courseUnit.get());
-			return new ResponseEntity<CoursesUnitDTO>(coursesUnitDTO, HttpStatus.OK);
+			return new ResponseEntity<Optional<CoursesUnit>>(courseUnit, HttpStatus.OK);
 		} catch (BusinessRuleException e) {
-			return new ResponseEntity<CoursesUnitDTO>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Optional<CoursesUnit>>(HttpStatus.NOT_FOUND);
 		}
-	}
-	
-	private CoursesUnitDTO convertDTO(CoursesUnit coursesUnit) {
-		CoursesUnitDTO dto = new CoursesUnitDTO();
-		
-		dto.setId(coursesUnit.getId());
-		dto.setCode(coursesUnit.getCode());
-		dto.setName(coursesUnit.getName());
-		
-		return dto;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -118,30 +107,30 @@ public class CoursesUnitResource {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked"})
 	@PutMapping("/{id}/includeteacher")
-	public ResponseEntity includeTeacher(@PathVariable("id") Long id, @RequestBody CoursesUnitDTO dto) {
+	public ResponseEntity includeTeacher(@PathVariable("id") Long id, @RequestBody String teacherRegistration) {
 		return service.findById(id).map(entity -> {
 			try {
 				CoursesUnit coursesUnit = entity;
 				
-				Optional<Teacher> teacher = serviceTeacher.findByRegistration(dto.getTeacherRegistration());
-				if (!teacher.isPresent()) {
+				Optional<Teacher> findTeacher = serviceTeacher.findByRegistration(teacherRegistration);
+				if (!findTeacher.isPresent()) {
 					return ResponseEntity.badRequest().body("Professor não encontrado para a matricula informada");
 				} 
 				
 				List<Teacher> teachers = coursesUnit.getTeachers();
 				
-				if (teachers.contains(teacher.get())) {
+				if (teachers.contains(findTeacher.get())) {
 					return ResponseEntity.badRequest().body("Professor já está no Curso");
 				}
 				
-				teachers.add(teacher.get());
+				teachers.add(findTeacher.get());
 				coursesUnit.setTeachers(teachers);
 				
-				ResponseEntity response = teacherResource.includeTeacherInCourseUnit(teacher.get().getId(), coursesUnit);
+				ResponseEntity response = teacherResource.includeTeacherInCourseUnit(findTeacher.get().getId(), coursesUnit);
 				
-				if (response.equals(ResponseEntity.ok(teacher.get()))) {
+				if (response.equals(ResponseEntity.ok(findTeacher.get()))) {
 					service.updateCourseUnit(coursesUnit);
-					return ResponseEntity.ok(coursesUnit);
+					return ResponseEntity.ok(findTeacher);
 				} else {
 					return ResponseEntity.badRequest().body(response.getBody());
 				}
@@ -152,30 +141,30 @@ public class CoursesUnitResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked"})
-	@PutMapping("/{id}/removeteacher")
-	public ResponseEntity removeTeacher(@PathVariable("id") Long id, @RequestBody CoursesUnitDTO dto) {
+	@PutMapping("/{id}/removeteacher/{teacherId}")
+	public ResponseEntity removeTeacher(@PathVariable("id") Long id, @PathVariable("teacherId") Long teacherId) {
 		return service.findById(id).map(entity -> {
 			try {
 				CoursesUnit coursesUnit = entity;
 				
-				Optional<Teacher> teacher = serviceTeacher.findByRegistration(dto.getTeacherRegistration());
+				Optional<Teacher> findTeacher = serviceTeacher.findById(teacherId);
 				
-				if (!teacher.isPresent()) {
+				if (!findTeacher.isPresent()) {
 					return ResponseEntity.badRequest().body("Professor não encontrado para a matricula informada");
 				} 
 				
 				List<Teacher> teachers = coursesUnit.getTeachers();
 				
-				if (teachers.contains(teacher.get())) {
+				if (!teachers.contains(findTeacher.get())) {
 					return ResponseEntity.badRequest().body("Professor já está no Curso");
 				}
 				
-				teachers.remove(teacher.get());
+				teachers.remove(findTeacher.get());
 				coursesUnit.setTeachers(teachers);
 				
-				ResponseEntity response = teacherResource.removeTeacherFromCourseUnit(teacher.get().getId(), coursesUnit);
+				ResponseEntity response = teacherResource.removeTeacherFromCourseUnit(findTeacher.get().getId(), coursesUnit);
 				
-				if (response.equals(ResponseEntity.ok(teacher.get()))) {
+				if (response.equals(ResponseEntity.ok(findTeacher.get()))) {
 					service.updateCourseUnit(coursesUnit);
 					return ResponseEntity.ok(coursesUnit);
 				} else {
@@ -187,11 +176,8 @@ public class CoursesUnitResource {
 		}).orElseGet(() -> new ResponseEntity("Curso não encontrado na base de dados", HttpStatus.BAD_REQUEST));
 	}
 	
-	
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PostMapping("/save")
-	public ResponseEntity saveCourseClass(@RequestBody CoursesUnitDTO dto) {		
+	public ResponseEntity<Serializable> saveCourseClass(@RequestBody CoursesUnitDTO dto) {		
 		try {
 			CoursesUnit savedCourseUnit = convert(dto);
 
@@ -204,7 +190,7 @@ public class CoursesUnitResource {
 			
 			savedCourseUnit = service.saveCoursesUnit(savedCourseUnit);
 			teacherResource.includeTeacherInCourseUnit(teacher.get().getId(), savedCourseUnit);
-			return new ResponseEntity(savedCourseUnit, HttpStatus.CREATED);
+			return new ResponseEntity<Serializable>(savedCourseUnit, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}

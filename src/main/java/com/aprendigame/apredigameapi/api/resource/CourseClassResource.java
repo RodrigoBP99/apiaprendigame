@@ -94,42 +94,19 @@ public class CourseClassResource {
 		}
 	}
 	
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@GetMapping("/find/{id}")
-	public ResponseEntity findToUpdate(@PathVariable("id") Long id) {
-		try {
-			Optional<CourseClass> courseClass = service.findById(id);
-			CourseClassDTO courseClassDTO = convertDTO(courseClass.get());
-			return new ResponseEntity(courseClassDTO, HttpStatus.OK);	
-		} catch (BusinessRuleException e) {
-			return new ResponseEntity(HttpStatus.NOT_FOUND);
-		}
-	}
-	
-	private CourseClassDTO convertDTO(CourseClass courseClass) {
-		CourseClassDTO dto = new CourseClassDTO();
-		dto.setId(courseClass.getId());
-		dto.setCode(courseClass.getCode());
-		dto.setName(courseClass.getName());
-		dto.setQuizzes(courseClass.getQuizzes());
-		dto.setStudents(courseClass.getStudents());
-		
-		if(courseClass.getCourseUnit() != null) {
-			dto.setCourseUnitCode(courseClass.getCourseUnit().getCode());
-		}
-		
-		if(courseClass.getTeacher() != null) {
-			dto.setTeacherId(courseClass.getTeacher().getId());
-		}
-		
-		return dto;
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@DeleteMapping("/{id}")
 	public ResponseEntity delete(@PathVariable("id") Long id) {
 		return service.findById(id).map(entity -> {
+			
+			if (entity.getStudents() != null) {
+				for(Student student : entity.getStudents()) {
+					studentResource.removeStudentFromCourseClass(student.getId(), entity);
+				}
+				service.deleteCourseClass(entity);
+				return new ResponseEntity(HttpStatus.NO_CONTENT);
+			}
+			
 			service.deleteCourseClass(entity);
 			return new ResponseEntity(HttpStatus.NO_CONTENT);
 		}).orElseGet(() ->
@@ -186,28 +163,28 @@ public class CourseClassResource {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PutMapping("/{id}/include_student")
-	public ResponseEntity includeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+	public ResponseEntity includeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody String studentRegistration) {
 		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
-				Student student = studentService.findByRegistration(dto.getStudentRegistration())
+				Student studentFind = studentService.findByRegistration(studentRegistration)
 						.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para essa matricula"));
 
 				List<Student> students = courseClass.getStudents();
 				
 				//Testa se estudante informado já está na turma
-				if(students.contains(student)) {
+				if(students.contains(studentFind)) {
 					return ResponseEntity.badRequest().body("Estudante já cadastrado na Turma");
 				}
 				
-				students.add(student);
+				students.add(studentFind);
 				courseClass.setStudents(students);
 				
 				//inclui turma na lista de turmas do estudante
-				ResponseEntity response = studentResource.includeStudentInCourseClass(student.getId(), courseClass);
+				ResponseEntity response = studentResource.includeStudentInCourseClass(studentFind.getId(), courseClass);
 				
 				//testa se foi possivel incluir turma no estudante
-				if (response.equals(ResponseEntity.ok(student))) {
+				if (response.equals(ResponseEntity.ok(studentFind))) {
 					service.updateCourseClass(courseClass);
 					return ResponseEntity.ok(courseClass);
 				} else {
@@ -222,26 +199,26 @@ public class CourseClassResource {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PutMapping("/{id}/remove_student")
-	public ResponseEntity removeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+	public ResponseEntity removeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody Long studentId) {
 		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
-				Student student = studentService.findByRegistration(dto.getStudentRegistration())
+				Student studentFind = studentService.findById(studentId)
 						.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para essa matricula"));
 
 				List<Student> students = courseClass.getStudents();
 				
 				//testa se estudante está na lista da turma
-				if (!students.contains(student)) {
+				if (!students.contains(studentFind)) {
 					return ResponseEntity.badRequest().body("Estudante não está cadastrado nessa Turma");
 				}
 				
 				
-				students.remove(student);
+				students.remove(studentFind);
 				courseClass.setStudents(students);
 				
-				ResponseEntity response = studentResource.removeStudentFromCourseClass(student.getId(), courseClass);
-				if(response.equals(ResponseEntity.ok(student))) {
+				ResponseEntity response = studentResource.removeStudentFromCourseClass(studentFind.getId(), courseClass);
+				if(response.equals(ResponseEntity.ok(studentFind))) {
 					service.updateCourseClass(courseClass);
 					return ResponseEntity.ok(courseClass);
 				} else {
@@ -255,12 +232,12 @@ public class CourseClassResource {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PutMapping("/{id}/remove_teacher")
-	public ResponseEntity removeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+	public ResponseEntity removeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody Long teacherId) {
 		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
 				
-				Teacher teacher = teacherService.findByRegistration(dto.getTeacherRegistration())
+				Teacher teacher = teacherService.findById(teacherId)
 						.orElseThrow(() -> new BusinessRuleException("Professor não encontrado para a matricula informada"));
 
 				if(courseClass.getTeacher().equals(teacher)) {
@@ -281,13 +258,17 @@ public class CourseClassResource {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@PutMapping("/{id}/include_teacher")
-	public ResponseEntity includeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody CourseClassDTO dto) {
+	public ResponseEntity includeTeacherOnCourseClass(@PathVariable("id") Long id, @RequestBody String teacherRegistration) {
 		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
 				
-				Teacher teacher = teacherService.findByRegistration(dto.getTeacherRegistration())
+				Teacher teacher = teacherService.findByRegistration(teacherRegistration)
 						.orElseThrow(() -> new BusinessRuleException("Professor não encontrado para a matricula informada"));
+				
+				if (teacher.getCourseClasses().contains(courseClass)) {
+					return ResponseEntity.badRequest().body("Professor já cadastrado na Turma");
+				}
 
 				courseClass.setTeacher(teacher);
 
