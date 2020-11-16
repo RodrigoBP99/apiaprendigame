@@ -1,12 +1,15 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.PresencDTO;
@@ -30,6 +33,35 @@ public class PresencResource {
 		this.service = service;
 		this.studentService = studentService;
 		this.courseClassService = courseClassService;
+	}
+	
+	@GetMapping
+	public ResponseEntity<Object> findPresenc(
+			@RequestParam(value = "code", required = false)String code,
+			@RequestParam(value = "studentRegistration", required = false)String studentRegistration,
+			@RequestParam(value = "courseClassId", required = false)Long courseClassId) {
+		
+		Presenc presencFilter = new Presenc();
+		
+		presencFilter.setCode(code);
+		
+		if(studentRegistration != null ) {
+			Student student = studentService.findByRegistration(studentRegistration)
+					.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para a matricula informada"));
+			
+			presencFilter.setStudent(student);
+		}
+		
+		if(courseClassId != null) {
+			CourseClass courseClass = courseClassService.findById(courseClassId)
+					.orElseThrow(() -> new BusinessRuleException("Turma não encontrada"));
+			
+			presencFilter.setCourseClass(courseClass);
+		}
+		
+		List<Presenc> presencs = service.search(presencFilter);
+		
+		return ResponseEntity.ok(presencs);
 	}
 		
 	@PostMapping("/save")

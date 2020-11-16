@@ -1,6 +1,7 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.StudentDTO;
@@ -20,6 +22,7 @@ import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
 import com.aprendigame.apredigameapi.model.entity.Quizz;
 import com.aprendigame.apredigameapi.model.entity.Student;
+import com.aprendigame.apredigameapi.service.CourseClassService;
 import com.aprendigame.apredigameapi.service.CoursesUnitService;
 import com.aprendigame.apredigameapi.service.StudentService;
 
@@ -29,11 +32,53 @@ public class StudentResource {
 	
 	private StudentService service;
 	private CoursesUnitService courseUnitService;
+	private CourseClassService courseClassService;
 	
-	public StudentResource(StudentService service, CoursesUnitService courseUnitService) {
+	public StudentResource(StudentService service, CoursesUnitService courseUnitService, CourseClassService courseClassService) {
 		this.service = service;
 		this.courseUnitService = courseUnitService;
+		this.courseClassService = courseClassService;
 	}
+	
+	@GetMapping
+	public ResponseEntity<Object> findStudent(
+			@RequestParam(value = "name", required = false)String name,
+			@RequestParam(value = "registration", required = false)String registration,
+			@RequestParam(value = "courseUnitId", required = false)Long courseUnitId,
+			@RequestParam(value = "courseClassId", required = false)Long courseClassId) {
+		
+		Student studentFilter = new Student();
+		
+		studentFilter.setName(name);
+		studentFilter.setRegistration(registration);
+		
+		if (courseUnitId != null) {
+			CoursesUnit coursesUnit = courseUnitService.findById(courseUnitId)
+					.orElseThrow(() -> new BusinessRuleException("Curso não encontrado na base de dados"));
+			
+			studentFilter.setCourseUnit(coursesUnit);
+		}
+		
+		List<Student> students = service.search(studentFilter);
+		List<Student> studentListFiltred = new ArrayList<Student>();
+		
+		if(courseClassId != null) {
+			CourseClass courseClassFind = courseClassService.findById(courseClassId)
+					.orElseThrow(() -> new BusinessRuleException("Turma não encontrada na base de dados"));
+			
+			for(Student student : students) {
+				for(CourseClass courseClass : student.getCourseClasses()) {
+					if (courseClass.getId().equals(courseClassFind.getId())) {
+						studentListFiltred.add(student);
+					}
+				}
+			}
+			return ResponseEntity.ok(studentListFiltred);
+		}
+		
+		return ResponseEntity.ok(students);
+	}
+	
 	
 	@PostMapping("/login")
 	public ResponseEntity<Serializable> authenticate( @RequestBody StudentDTO dto) {
@@ -87,7 +132,7 @@ public class StudentResource {
 				student.setPoints(entity.getPoints());
 				student.setRequiredPoints(entity.getRequiredPoints());
 				student.setPassword(entity.getPassword());
-				student.setListClass(entity.getListClass());
+				student.setCourseClasses(entity.getCourseClasses());
 				student.setCourseUnit(entity.getCourseUnit());
 				
 				
@@ -107,13 +152,13 @@ public class StudentResource {
 			try {
 				Student student = entity;
 				
-				List<CourseClass> courseClasses = student.getListClass();
+				List<CourseClass> courseClasses = student.getCourseClasses();
 				
 				
 				if(!courseClasses.contains(courseClass)) {
 					courseClasses.add(courseClass);
 					
-					student.setListClass(courseClasses);
+					student.setCourseClasses(courseClasses);
 					service.updateStudent(student);
 					return ResponseEntity.ok(student);
 				} else {
@@ -133,13 +178,13 @@ public class StudentResource {
 			try {
 				Student student = entity;
 				
-				List<CourseClass> courseClasses = student.getListClass();
+				List<CourseClass> courseClasses = student.getCourseClasses();
 				
 				
 				if(courseClasses.contains(courseClass)) {
 					courseClasses.remove(courseClass);
 					
-					student.setListClass(courseClasses);
+					student.setCourseClasses(courseClasses);
 					service.updateStudent(student);
 					return ResponseEntity.ok(student);
 				} else {

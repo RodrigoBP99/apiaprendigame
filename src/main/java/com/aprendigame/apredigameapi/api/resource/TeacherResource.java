@@ -1,16 +1,19 @@
 package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.TeacherDTO;
@@ -31,6 +34,35 @@ public class TeacherResource {
 	public TeacherResource(TeacherService service, CoursesUnitService serviceCourseUnit) {
 		this.service = service;
 		this.serviceCourseUnit = serviceCourseUnit;
+	}
+	
+	
+	@GetMapping
+	public ResponseEntity<Object> findTeacher(
+			@RequestParam(value = "name", required = false)String name,
+			@RequestParam(value = "registration", required = false)String registration,
+			@RequestParam(value = "courseUnitId", required = false)Long courseUnitId) {
+		Teacher teacherFilter = new Teacher();
+		
+		teacherFilter.setName(name);
+		teacherFilter.setRegistration(registration);
+		
+		List<Teacher> teacherList = service.search(teacherFilter);
+		List<Teacher> teacherListFiltred = new ArrayList<Teacher>();
+		
+		if(courseUnitId != null) {
+			CoursesUnit coursesUnit = serviceCourseUnit.findById(courseUnitId)
+					.orElseThrow(() -> new BusinessRuleException("Não foi possivel encontrar esse curso"));
+			for (Teacher teacher : teacherList) {
+				for(CoursesUnit courseUnit1 : teacher.getCourseUnit()) {
+					if(courseUnit1.getId().equals(coursesUnit.getId())) {
+						teacherListFiltred.add(teacher);
+					}
+				}
+			}
+			return ResponseEntity.ok(teacherListFiltred);
+		}
+		return ResponseEntity.ok(teacherList);
 	}
 	
 	@PostMapping("/login")
