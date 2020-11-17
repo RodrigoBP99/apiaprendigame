@@ -18,4 +18,6 @@ public interface CoursesUnitService {
 	CoursesUnit updateCourseUnit(CoursesUnit courseUnit);
 
 	List<CoursesUnit> search(CoursesUnit courseUnitFilter);
+	
+	void deleteCourseUnit (CoursesUnit coursesUnit);
 }

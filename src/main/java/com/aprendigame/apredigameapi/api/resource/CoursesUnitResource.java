@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aprendigame.apredigameapi.api.dto.CoursesUnitDTO;
 import com.aprendigame.apredigameapi.exception.BusinessRuleException;
+import com.aprendigame.apredigameapi.model.entity.CourseClass;
 import com.aprendigame.apredigameapi.model.entity.CoursesUnit;
+import com.aprendigame.apredigameapi.model.entity.Student;
 import com.aprendigame.apredigameapi.model.entity.Teacher;
 import com.aprendigame.apredigameapi.service.CoursesUnitService;
+import com.aprendigame.apredigameapi.service.StudentService;
 import com.aprendigame.apredigameapi.service.TeacherService;
 
 @RestController
@@ -30,11 +34,15 @@ public class CoursesUnitResource {
 	private CoursesUnitService service;
 	private TeacherService serviceTeacher;
 	private TeacherResource teacherResource;
+	private StudentService studentService;
+	private CourseClassResource courseClassResource;
 	
-	public CoursesUnitResource(CoursesUnitService service, TeacherService serviceTeacher, TeacherResource teacherResource) {
+	public CoursesUnitResource(CoursesUnitService service, TeacherService serviceTeacher, TeacherResource teacherResource, StudentService studentService, CourseClassResource courseClassResource) {
 		this.service = service;
 		this.serviceTeacher = serviceTeacher;
 		this.teacherResource = teacherResource;
+		this.studentService = studentService;
+		this.courseClassResource = courseClassResource;
 	}
 	
 
@@ -68,6 +76,30 @@ public class CoursesUnitResource {
 		
 		
 		return ResponseEntity.ok(coursesUnits);	
+	}
+	
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@DeleteMapping("/{id}")
+	public ResponseEntity delete(@PathVariable("id")Long id) {
+		return service.findById(id).map(entity -> {
+			for (Teacher teacher : entity.getTeachers()) {
+				teacherResource.removeTeacherFromCourseUnit(teacher.getId(), entity);
+			}
+			
+			for (Student student : entity.getStudents()) {
+				student.setCourseUnit(null);
+				studentService.updateStudent(student);
+			}
+			
+			for (CourseClass courseClass : entity.getCourseClasses()) {
+				courseClassResource.delete(courseClass.getId());	
+			}
+			
+			service.deleteCourseUnit(entity);
+			return new ResponseEntity(HttpStatus.NO_CONTENT);
+		}).orElseGet(() -> 
+			new ResponseEntity("Curso não encontrado", HttpStatus.NOT_FOUND));
 	}
 	
 	@GetMapping("/find/{id}")
@@ -174,6 +206,67 @@ public class CoursesUnitResource {
 				return ResponseEntity.badRequest().body(e.getMessage());
 			}
 		}).orElseGet(() -> new ResponseEntity("Curso não encontrado na base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@PutMapping("/{id}/includestudent")
+	public ResponseEntity includeStudent(@PathVariable("id") Long id, @RequestBody String studentRegistration) {
+		return service.findById(id).map(entity -> {
+			CoursesUnit coursesUnit = entity;
+			
+			Optional<Student> student = studentService.findByRegistration(studentRegistration);
+			
+			if (!student.isPresent()) {
+				return ResponseEntity.badRequest().body("Estudando não encontrada para matricula informada");
+			}
+			
+			if (student.get().getCourseUnit() != null) {
+				return ResponseEntity.badRequest().body("Estudando já pertence a um Curso");
+			}
+			
+			List<Student> students = coursesUnit.getStudents();
+			
+			if (students.contains(student.get())) {
+				return ResponseEntity.badRequest().body("Estudando já pertence a esse Curso");
+			}
+			
+			students.add(student.get());
+			student.get().setCourseUnit(coursesUnit);
+			studentService.updateStudent(student.get());
+			
+			service.updateCourseUnit(coursesUnit);
+			return ResponseEntity.ok(student);
+		}).orElseGet(() -> new ResponseEntity("Curso não encontrado", HttpStatus.BAD_REQUEST));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@PutMapping("/{id}/removestudent/{studentId}")
+	public ResponseEntity removeStudent(@PathVariable("id") Long id, @PathVariable("studentId") Long studentId) {
+		return service.findById(id).map(entity -> {
+			CoursesUnit coursesUnit = entity;
+			
+			Student student = studentService.findById(studentId).orElseThrow(() -> new BusinessRuleException("Estudante não encontrado!"));
+			
+			
+			List<Student> studentList = coursesUnit.getStudents();
+			
+			if (!studentList.contains(student)) {
+				return ResponseEntity.badRequest().body("Esse estudante não pertence ao curso");
+			}
+			
+			if (!student.getCourseUnit().getId().equals(coursesUnit.getId())) {
+				return ResponseEntity.badRequest().body("Esse estudante não pertence ao curso");
+			}
+			
+			studentList.remove(student);
+			student.setCourseUnit(null);
+			
+			studentService.updateStudent(student);
+			
+			coursesUnit.setStudents(studentList);
+			service.updateCourseUnit(coursesUnit);
+			return ResponseEntity.ok(student);
+		}).orElseGet(() -> new ResponseEntity("Curso não encontrado", HttpStatus.BAD_REQUEST));
 	}
 	
 	@PostMapping("/save")

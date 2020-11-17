@@ -74,4 +74,10 @@ public class CoursesUnitServiceImpl implements CoursesUnitService{
 		
 		return repository.findAll(example);
 	}
+
+	@Override
+	public void deleteCourseUnit(CoursesUnit coursesUnit) {
+		Objects.requireNonNull(coursesUnit.getId());
+		repository.delete(coursesUnit);
+	}
 }
