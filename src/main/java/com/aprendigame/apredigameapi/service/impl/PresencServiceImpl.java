@@ -1,6 +1,8 @@
 package com.aprendigame.apredigameapi.service.impl;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -47,6 +49,17 @@ public class PresencServiceImpl implements PresencService {
 					.withIgnoreCase()
 					.withStringMatcher(StringMatcher.CONTAINING));
 		return repository.findAll(example);
+	}
+
+	@Override
+	public Optional<Presenc> findById(Long id) {
+		return repository.findById(id);
+	}
+
+	@Override
+	public void deletePresenc(Presenc presenc) {
+		Objects.requireNonNull(presenc.getId());
+		repository.delete(presenc);
 	}
 
 }

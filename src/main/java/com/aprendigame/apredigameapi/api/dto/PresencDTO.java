@@ -15,6 +15,6 @@ public class PresencDTO {
 	private Long courseClassId;
 	private String date;
 	private String hour;
-	private String studentRegistration;
+	private Long studentId;
 
 }

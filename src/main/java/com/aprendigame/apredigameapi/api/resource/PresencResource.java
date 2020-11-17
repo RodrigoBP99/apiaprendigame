@@ -2,10 +2,13 @@ package com.aprendigame.apredigameapi.api.resource;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,14 +66,43 @@ public class PresencResource {
 		
 		return ResponseEntity.ok(presencs);
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@DeleteMapping("/{id}")
+	public ResponseEntity delete(@PathVariable("id") Long id) {
+		return service.findById(id).map(entity -> {
+			
+			service.deletePresenc(entity);
+			return new ResponseEntity(HttpStatus.NO_CONTENT);
+		}).orElseGet(() -> 
+		new ResponseEntity("Presença não encontrada", HttpStatus.NOT_FOUND));
+	}
 		
 	@PostMapping("/save")
 	public ResponseEntity<Serializable> save(@RequestBody PresencDTO dto){		
 		try {
 			Presenc savedPresenc = convert(dto);
-			savedPresenc = service.savePresenc(savedPresenc);
 			
-			return new ResponseEntity<Serializable>(savedPresenc, HttpStatus.CREATED);
+			Optional<Student> student = studentService.findById(dto.getStudentId());
+			if (!student.isPresent()) {
+				return ResponseEntity.badRequest().body("Estudante não Encontrado na base de Dados");
+			}
+			
+			Optional<CourseClass> courseClass = courseClassService.findById(dto.getCourseClassId());
+			
+			if (!courseClass.isPresent()) {
+				return ResponseEntity.badRequest().body("Turma não Encontrado na base de Dados");
+			}
+			
+			List<CourseClass> studentCourseClasses = student.get().getCourseClasses();
+
+			if(studentCourseClasses.contains(courseClass.get())) {
+				
+				savedPresenc = service.savePresenc(savedPresenc);
+				return new ResponseEntity<Serializable>(savedPresenc, HttpStatus.CREATED);	
+			} else {
+				return ResponseEntity.badRequest().body("Você não está matriculado nessa turma");
+			}
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -87,7 +119,7 @@ public class PresencResource {
 		
 		presenc.setCourseClass(courseClass);
 		
-		Student student = studentService.findByRegistration(dto.getStudentRegistration())
+		Student student = studentService.findById(dto.getStudentId())
 				.orElseThrow(() -> new BusinessRuleException("Estudante não encontrado para a matricula informada"));
 		
 		presenc.setStudent(student);
