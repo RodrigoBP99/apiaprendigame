@@ -162,7 +162,7 @@ public class CourseClassResource {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/{id}/include_student")
+	@PutMapping("/{id}/includestudent")
 	public ResponseEntity includeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody String studentRegistration) {
 		return service.findById(id).map(entity -> {
 			try {
@@ -186,7 +186,7 @@ public class CourseClassResource {
 				//testa se foi possivel incluir turma no estudante
 				if (response.equals(ResponseEntity.ok(studentFind))) {
 					service.updateCourseClass(courseClass);
-					return ResponseEntity.ok(courseClass);
+					return ResponseEntity.ok(studentFind);
 				} else {
 					return ResponseEntity.badRequest().body(response.getBody());
 				}
@@ -198,8 +198,8 @@ public class CourseClassResource {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PutMapping("/{id}/remove_student")
-	public ResponseEntity removeStudentOnCourseClass(@PathVariable("id") Long id, @RequestBody Long studentId) {
+	@PutMapping("/{id}/removestudent/{studentId}")
+	public ResponseEntity removeStudentOnCourseClass(@PathVariable("id") Long id, @PathVariable("studentId")Long studentId) {
 		return service.findById(id).map(entity -> {
 			try {
 				CourseClass courseClass = entity;
@@ -220,7 +220,7 @@ public class CourseClassResource {
 				ResponseEntity response = studentResource.removeStudentFromCourseClass(studentFind.getId(), courseClass);
 				if(response.equals(ResponseEntity.ok(studentFind))) {
 					service.updateCourseClass(courseClass);
-					return ResponseEntity.ok(courseClass);
+					return ResponseEntity.ok(studentFind);
 				} else {
 					return ResponseEntity.badRequest().body(response.getBody());
 				}
